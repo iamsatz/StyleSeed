@@ -144,12 +144,16 @@
 
 /* ─── Color inputs row ───────────────────────────────── */
 .kd-color-inputs {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: end;
   gap: 12px;
-  flex-wrap: wrap;
   margin-bottom: 40px;
+}
+
+.kd-color-inputs .kd-reset-btn {
+  grid-column: 1 / -1;
+  justify-self: center;
 }
 
 .kd-color-input-group {
@@ -175,7 +179,7 @@
   border-radius: 8px;
   overflow: hidden;
   height: 36px;
-  min-width: 148px;
+  width: 100%;
   backdrop-filter: blur(4px);
   position: relative;
 }
@@ -474,6 +478,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  margin-bottom: 32px;
+}
+
+.kit-detail-custom .similar-sites {
   margin-bottom: 32px;
 }
 

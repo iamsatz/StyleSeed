@@ -4,6 +4,7 @@ import ColorPalette from '../components/kit/ColorPalette'
 import ComponentGallery from '../components/kit/ComponentGallery'
 import TokenTable from '../components/kit/TokenTable'
 import ExportPanel from '../components/kit-detail/ExportPanel'
+import SimilarWebsitesPanel from '../components/inspiration/SimilarWebsitesPanel'
 import { useCustomKit } from '../context/CustomKitContext'
 import { loadFontPair } from '../lib/loadGoogleFont'
 import './KitDetailPage.css'
@@ -128,6 +129,15 @@ function CustomKitDetail({ kit }) {
           </div>
         </div>
       </div>
+
+      <SimilarWebsitesPanel
+        kit={kit}
+        category={kit.industry}
+        title="Similar Websites"
+        description="References ranked against this kit's primary color, background, contrast mood, and category."
+        limit={3}
+        variant="detail"
+      />
 
       <div className="kit-detail-export">
         <h2 className="kit-export-title">Export Tokens</h2>
@@ -362,6 +372,17 @@ export default function KitDetailPage() {
             <FontSpecimen kit={kit} />
           </section>
         )}
+
+        <section className="kd-section">
+          <SimilarWebsitesPanel
+            kit={mergedKit}
+            category={kit.industry}
+            title="Similar Websites"
+            description="References ranked against this kit's current colors, contrast mood, and category."
+            limit={3}
+            variant="detail"
+          />
+        </section>
 
         <section className="kd-section">
           <ColorPalette kit={mergedKit} mode={mode} />

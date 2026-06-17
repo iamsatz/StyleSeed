@@ -26,5 +26,5 @@ export async function loadKits() {
  */
 export function getSwatchColors(kit) {
   const { background, surface, primary, secondary, accent } = kit.palette.light;
-  return [background, surface, primary, secondary, accent];
+  return [primary, secondary, accent, surface, background];
 }

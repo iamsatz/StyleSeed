@@ -9,7 +9,32 @@ import {
   generateReplitPrompt,
 } from '../lib/exportGenerators'
 import { FONT_PAIRS, FONT_PAIR_GROUPS, getDefaultPair } from '../lib/fontPairs'
-import { loadFontPair } from '../lib/loadGoogleFont'
+import { loadFont, loadFontRecord } from '../lib/loadGoogleFont'
+import { COLOR_USAGE_PRESETS, normalizeColorUsage } from '../lib/colorUsagePresets'
+import { DEFAULT_PORTFOLIO_SECTIONS } from '../lib/portfolioPreviewOptions'
+import { PREVIEW_SECTION_OPTIONS, getDefaultSections } from '../lib/previewSectionOptions'
+import {
+  GOOGLE_FONT_CATEGORIES,
+  GOOGLE_FONT_POPULARITY,
+} from '../lib/googleFontsCatalog'
+import { FONT_PROVIDERS, getFontRecordByFamily, searchFreeFonts } from '../lib/freeFontCatalog'
+import {
+  FONT_SUGGESTION_CONTEXTS,
+  getSuggestedPairings,
+} from '../lib/fontSuggestions'
+import { deriveInspirationUpdate } from '../lib/inspirationAdapters'
+import {
+  WEBSITE_REFERENCE_CATEGORIES,
+  getWebsiteReferencesByCategory,
+} from '../lib/websiteReferences'
+import {
+  TYPOGRAPHY_MODES,
+  TYPOGRAPHY_ROLES,
+  TYPOGRAPHY_PRESETS,
+  getDefaultTypography,
+  getFontOptions,
+  normalizeTypography,
+} from '../lib/typographyRoles'
 import PreviewDashboard from '../components/create/previews/PreviewDashboard'
 import PreviewPortfolio from '../components/create/previews/PreviewPortfolio'
 import PreviewBlog from '../components/create/previews/PreviewBlog'
@@ -29,6 +54,7 @@ import PreviewJobBoard from '../components/create/previews/PreviewJobBoard'
 import PreviewAnalytics from '../components/create/previews/PreviewAnalytics'
 import PreviewError404 from '../components/create/previews/PreviewError404'
 import PreviewWaitlist from '../components/create/previews/PreviewWaitlist'
+import SimilarWebsitesPanel from '../components/inspiration/SimilarWebsitesPanel'
 import './CreatePage.css'
 
 const PREVIEW_PAGES = [
@@ -55,6 +81,26 @@ const PREVIEW_PAGES = [
   { id: 'waitlist', icon: '⏳', label: 'Waitlist / Coming Soon', component: PreviewWaitlist },
 ]
 
+const PREVIEW_REFERENCE_CATEGORIES = {
+  saas: 'SaaS',
+  dashboard: 'SaaS',
+  analytics: 'SaaS',
+  pricing: 'SaaS',
+  waitlist: 'SaaS',
+  portfolio: 'Portfolio',
+  docs: 'Developer',
+  ecommerce: 'Ecommerce',
+  product: 'Retail',
+  restaurant: 'Retail',
+  signin: 'Productivity',
+  signup: 'Productivity',
+  onboarding: 'Productivity',
+}
+
+function getPreviewReferenceCategory(previewPage) {
+  return PREVIEW_REFERENCE_CATEGORIES[previewPage] || 'All'
+}
+
 const ROLES = [
   { key: 'primary', label: 'Primary', required: true, hint: 'CTAs, buttons, links' },
   { key: 'secondary', label: 'Secondary', required: false, hint: 'Auto-derived from primary' },
@@ -70,6 +116,8 @@ const DEFAULT_COLORS = {
   surface: '',
   text: '#111827',
 }
+
+const FONT_OPTIONS = getFontOptions()
 
 function isValidHex(val) {
   return /^#[0-9a-fA-F]{3,8}$/.test((val || '').trim())
@@ -118,7 +166,7 @@ function deriveSurface(background) {
   return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')
 }
 
-function buildKitFromColors(values, kitName, fontPair) {
+function buildKitFromColors(values, kitName, typography, colorUsage) {
   const primary = values.primary || '#7c3aed'
   const secondary = (values.secondary && isValidHex(values.secondary))
     ? values.secondary
@@ -135,19 +183,15 @@ function buildKitFromColors(values, kitName, fontPair) {
   let bgB = parseInt(bgHex.slice(4, 6), 16)
   const isDark = (bgR * 299 + bgG * 587 + bgB * 114) / 1000 < 128
 
-  const pair = fontPair || getDefaultPair()
+  const normalizedTypography = normalizeTypography(typography)
 
   return {
     id: 'custom',
     name: kitName || 'My Custom Kit',
     industry: 'Custom',
     description: 'Your custom brand kit.',
-    typography: {
-      headingFont: pair.heading,
-      bodyFont: pair.body,
-      baseFontSize: '16px',
-      lineHeight: '1.6',
-    },
+    typography: normalizedTypography,
+    colorUsage,
     palette: {
       light: {
         background,
@@ -177,21 +221,28 @@ function buildKitFromColors(values, kitName, fontPair) {
   }
 }
 
+function applyKitPreviewVars(el, kit) {
+  if (!el || !kit) return
+  const palette = kit.palette.light
+  const roles = ['background', 'surface', 'primary', 'secondary', 'accent', 'text', 'textMuted', 'border', 'success', 'warning']
+  roles.forEach((role) => {
+    if (palette[role]) el.style.setProperty(`--hp-${role}`, palette[role])
+  })
+  if (kit.typography) {
+    const typography = normalizeTypography(kit.typography)
+    el.style.setProperty('--hp-display-font', `'${typography.displayFont}', sans-serif`)
+    el.style.setProperty('--hp-heading-font', `'${typography.headingFont}', sans-serif`)
+    el.style.setProperty('--hp-body-font', `'${typography.bodyFont}', sans-serif`)
+    el.style.setProperty('--hp-mono-font', `'${typography.monoFont}', monospace`)
+  }
+}
+
 function LivePreviewComponents({ kit }) {
   const ref = useRef(null)
 
   useEffect(() => {
     if (!ref.current || !kit) return
-    const el = ref.current
-    const palette = kit.palette.light
-    const roles = ['background', 'surface', 'primary', 'secondary', 'accent', 'text', 'textMuted', 'border', 'success', 'warning']
-    roles.forEach((role) => {
-      if (palette[role]) el.style.setProperty(`--hp-${role}`, palette[role])
-    })
-    if (kit.typography) {
-      if (kit.typography.headingFont) el.style.setProperty('--hp-heading-font', `'${kit.typography.headingFont}', sans-serif`)
-      if (kit.typography.bodyFont) el.style.setProperty('--hp-body-font', `'${kit.typography.bodyFont}', sans-serif`)
-    }
+    applyKitPreviewVars(ref.current, kit)
   }, [kit])
 
   if (!kit) return null
@@ -279,16 +330,7 @@ function LivePreviewApp({ kit }) {
 
   useEffect(() => {
     if (!ref.current || !kit) return
-    const el = ref.current
-    const palette = kit.palette.light
-    const roles = ['background', 'surface', 'primary', 'secondary', 'accent', 'text', 'textMuted', 'border', 'success', 'warning']
-    roles.forEach((role) => {
-      if (palette[role]) el.style.setProperty(`--hp-${role}`, palette[role])
-    })
-    if (kit.typography) {
-      if (kit.typography.headingFont) el.style.setProperty('--hp-heading-font', `'${kit.typography.headingFont}', sans-serif`)
-      if (kit.typography.bodyFont) el.style.setProperty('--hp-body-font', `'${kit.typography.bodyFont}', sans-serif`)
-    }
+    applyKitPreviewVars(ref.current, kit)
   }, [kit])
 
   if (!kit) return null
@@ -490,10 +532,7 @@ function FontPairPicker({ value, onChange }) {
   }))
 
   return (
-    <div className="cp-typography-section">
-      <div className="cp-section-divider">
-        <span className="cp-section-label">Typography</span>
-      </div>
+    <div className="cp-font-pair-picker">
       <div className="cp-font-pair-row">
         <div className="cp-font-pair-info">
           <span className="cp-font-pair-label">Font Pair</span>
@@ -526,7 +565,446 @@ function FontPairPicker({ value, onChange }) {
   )
 }
 
-function BuilderTab({ values, onChange, fontPairId, onFontPairChange }) {
+function FreeFontSearch({ activeRoles, onApplyFont }) {
+  const [query, setQuery] = useState('')
+  const [provider, setProvider] = useState('all')
+  const [category, setCategory] = useState('all')
+  const [popularity, setPopularity] = useState('all')
+  const [minStyles, setMinStyles] = useState('0')
+  const [variableOnly, setVariableOnly] = useState(false)
+  const [targetRole, setTargetRole] = useState(activeRoles[0]?.key || 'headingFont')
+
+  const results = searchFreeFonts({ query, provider, category, popularity, minStyles, variableOnly }).slice(0, 12)
+
+  useEffect(() => {
+    results.slice(0, 6).forEach((font) => loadFontRecord(font))
+  }, [results])
+
+  useEffect(() => {
+    if (!activeRoles.some((role) => role.key === targetRole) && activeRoles[0]) {
+      setTargetRole(activeRoles[0].key)
+    }
+  }, [activeRoles, targetRole])
+
+  return (
+    <div className="cp-google-fonts">
+      <div className="cp-type-block-head">
+        <div>
+          <span className="cp-type-block-title">Free Font Search</span>
+          <span className="cp-type-block-hint">Google Fonts plus curated free/fontshare-style picks</span>
+        </div>
+      </div>
+
+      <div className="cp-google-font-controls">
+        <input
+          className="cp-google-font-search"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search Inter, Satoshi, serif, docs, luxury..."
+          aria-label="Search free fonts"
+        />
+        <select value={targetRole} onChange={(e) => setTargetRole(e.target.value)} aria-label="Assign font role">
+          {activeRoles.map((role) => (
+            <option key={role.key} value={role.key}>{role.label}</option>
+          ))}
+        </select>
+        <select value={provider} onChange={(e) => setProvider(e.target.value)} aria-label="Filter font source">
+          {FONT_PROVIDERS.map((item) => (
+            <option key={item.id} value={item.id}>{item.label}</option>
+          ))}
+        </select>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter font category">
+          {GOOGLE_FONT_CATEGORIES.map((item) => (
+            <option key={item} value={item}>{item === 'all' ? 'All categories' : item}</option>
+          ))}
+        </select>
+        <select value={popularity} onChange={(e) => setPopularity(e.target.value)} aria-label="Filter font popularity">
+          {GOOGLE_FONT_POPULARITY.map((item) => (
+            <option key={item} value={item}>{item === 'all' ? 'All popularity' : item}</option>
+          ))}
+        </select>
+        <select value={minStyles} onChange={(e) => setMinStyles(e.target.value)} aria-label="Minimum number of styles">
+          <option value="0">Any styles</option>
+          <option value="4">4+ styles</option>
+          <option value="8">8+ styles</option>
+          <option value="12">12+ styles</option>
+        </select>
+        <label className="cp-google-font-toggle">
+          <input
+            type="checkbox"
+            checked={variableOnly}
+            onChange={(e) => setVariableOnly(e.target.checked)}
+          />
+          Variable
+        </label>
+      </div>
+
+      <div className="cp-google-font-results">
+        {results.map((font) => (
+          <div key={font.family} className="cp-google-font-card">
+            <div className="cp-google-font-meta">
+              <span className="cp-google-font-provider">{font.providerLabel}</span>
+              <span>{font.category}</span>
+              <span>{font.styles} styles</span>
+              {font.variable && <span>Variable</span>}
+            </div>
+            <div className="cp-google-font-preview" style={{ fontFamily: `'${font.family}', sans-serif` }}>
+              {font.family}
+            </div>
+            <div className="cp-google-font-tags">
+              {font.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+            </div>
+            <div className="cp-google-font-license">
+              <strong>{font.license}</strong>
+              <span>{font.recommendedUse}</span>
+            </div>
+            <button
+              type="button"
+              className="cp-google-font-apply"
+              onClick={() => {
+                loadFontRecord(font)
+                onApplyFont(targetRole, font.family)
+              }}
+            >
+              Apply to {activeRoles.find((role) => role.key === targetRole)?.label || 'role'}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function SmartFontSuggestions({ typography, activeRoles, onApplySystem }) {
+  const [contextId, setContextId] = useState(FONT_SUGGESTION_CONTEXTS[0].id)
+  const [pairingRole, setPairingRole] = useState(activeRoles[0]?.key || 'headingFont')
+  const context = FONT_SUGGESTION_CONTEXTS.find((item) => item.id === contextId) || FONT_SUGGESTION_CONTEXTS[0]
+  const pairingFont = typography[pairingRole] || typography.headingFont
+  const pairings = getSuggestedPairings(pairingFont)
+
+  useEffect(() => {
+    if (!activeRoles.some((role) => role.key === pairingRole) && activeRoles[0]) {
+      setPairingRole(activeRoles[0].key)
+    }
+  }, [activeRoles, pairingRole])
+
+  function applySystem(system) {
+    onApplySystem(system)
+  }
+
+  return (
+    <div className="cp-smart-fonts">
+      <div className="cp-type-block-head">
+        <div>
+          <span className="cp-type-block-title">Smart Font Suggestions</span>
+          <span className="cp-type-block-hint">Complete role systems by product context</span>
+        </div>
+      </div>
+
+      <div className="cp-smart-font-controls">
+        <select value={contextId} onChange={(e) => setContextId(e.target.value)} aria-label="Suggestion context">
+          {FONT_SUGGESTION_CONTEXTS.map((item) => (
+            <option key={item.id} value={item.id}>{item.label}</option>
+          ))}
+        </select>
+        <span>{context.context}</span>
+      </div>
+
+      <div className="cp-smart-system-grid">
+        {context.systems.map((system) => (
+          <button
+            key={system.name}
+            type="button"
+            className="cp-smart-system-card"
+            onClick={() => applySystem(system)}
+          >
+            <span className="cp-smart-system-name">{system.name}</span>
+            <span className="cp-smart-system-stack">
+              {system.displayFont} / {system.headingFont} / {system.bodyFont} / {system.monoFont}
+            </span>
+            <span className="cp-smart-system-reason">{system.reason}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="cp-smart-pairings">
+        <div className="cp-smart-pairings-head">
+          <span>Suggest pairings for</span>
+          <select value={pairingRole} onChange={(e) => setPairingRole(e.target.value)} aria-label="Pairing role">
+            {activeRoles.map((role) => (
+              <option key={role.key} value={role.key}>{role.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="cp-smart-pairing-list">
+          {pairings.length > 0 ? pairings.map((system) => (
+            <button
+              key={system.name}
+              type="button"
+              className="cp-smart-pairing"
+              onClick={() => applySystem(system)}
+            >
+              <strong>{system.name}</strong>
+              <span>{system.displayFont} / {system.headingFont} / {system.bodyFont}</span>
+            </button>
+          )) : (
+            <p className="cp-smart-empty">No saved pairing rules for {pairingFont}. Try a context system above.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TypographyTab({ typography, starterPairId, onTypographyChange, onApplyPair, onApplyPreset }) {
+  const normalized = normalizeTypography(typography)
+  const activeMode = TYPOGRAPHY_MODES.find((mode) => mode.id === normalized.mode) || TYPOGRAPHY_MODES[1]
+  const visibleRoles = TYPOGRAPHY_ROLES.filter((role) => role.minMode <= activeMode.roleCount)
+
+  function updateField(key, value) {
+    onTypographyChange({ ...normalized, [key]: value })
+  }
+
+  function updateMode(modeId) {
+    onTypographyChange(normalizeTypography({ ...normalized, mode: modeId }))
+  }
+
+  return (
+    <div className="cp-typography-studio">
+      <div className="cp-typography-mode-grid">
+        {TYPOGRAPHY_MODES.map((mode) => (
+          <button
+            key={mode.id}
+            type="button"
+            className={`cp-type-mode-card ${normalized.mode === mode.id ? 'cp-type-mode-card--active' : ''}`}
+            onClick={() => updateMode(mode.id)}
+          >
+            <span className="cp-type-mode-title">{mode.label}</span>
+            <span className="cp-type-mode-count">{mode.roleCount} role{mode.roleCount > 1 ? 's' : ''}</span>
+            <span className="cp-type-mode-fit">{mode.bestFor}</span>
+            <span className="cp-type-mode-why">{mode.why}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="cp-type-block">
+        <div className="cp-type-block-head">
+          <span className="cp-type-block-title">Starter Pair</span>
+          <span className="cp-type-block-hint">Optional shortcut</span>
+        </div>
+        <FontPairPicker value={starterPairId} onChange={onApplyPair} />
+      </div>
+
+      <div className="cp-type-role-list">
+        {visibleRoles.map((role) => (
+          <div key={role.key} className="cp-type-role-row">
+            <div className="cp-type-role-copy">
+              <span className="cp-type-role-label">{role.label}</span>
+              <span className="cp-type-role-hint">{role.hint}</span>
+            </div>
+            <select
+              className="cp-type-role-select"
+              value={normalized[role.key]}
+              onChange={(e) => updateField(role.key, e.target.value)}
+              aria-label={`${role.label} font`}
+            >
+              {FONT_OPTIONS.map((font) => (
+                <option key={font} value={font}>{font}</option>
+              ))}
+            </select>
+          </div>
+        ))}
+      </div>
+
+      <FreeFontSearch activeRoles={visibleRoles} onApplyFont={updateField} />
+
+      <SmartFontSuggestions
+        typography={normalized}
+        activeRoles={visibleRoles}
+        onApplySystem={onApplyPreset}
+      />
+
+      <div className="cp-type-preset-grid">
+        {TYPOGRAPHY_PRESETS.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            className="cp-type-preset"
+            onClick={() => onApplyPreset(preset)}
+          >
+            <span className="cp-type-preset-name">{preset.label}</span>
+            <span className="cp-type-preset-stack">
+              {preset.displayFont} / {preset.headingFont} / {preset.bodyFont}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div className="cp-type-specimen">
+        <div className="cp-type-display" style={{ fontFamily: `'${normalized.displayFont}', sans-serif` }}>
+          Build faster with your brand
+        </div>
+        <div className="cp-type-heading" style={{ fontFamily: `'${normalized.headingFont}', sans-serif` }}>
+          Product teams use this heading style for section hierarchy.
+        </div>
+        <p className="cp-type-body" style={{ fontFamily: `'${normalized.bodyFont}', sans-serif` }}>
+          Body text needs a calm rhythm, useful contrast, and enough personality to carry repeated product screens.
+        </p>
+        <code className="cp-type-mono" style={{ fontFamily: `'${normalized.monoFont}', monospace` }}>
+          --font-code: {normalized.monoFont}
+        </code>
+      </div>
+    </div>
+  )
+}
+
+function PortfolioSectionControls({ value, onChange }) {
+  return (
+    <div className="cp-portfolio-controls">
+      <div className="cp-portfolio-controls-head">
+        <div>
+          <span className="cp-portfolio-controls-kicker">Portfolio structure</span>
+          <strong>Section components</strong>
+        </div>
+        <span>Structure inspired by common designer portfolios, using HuePrint placeholder content.</span>
+      </div>
+      <div className="cp-portfolio-control-grid">
+        {PORTFOLIO_SECTION_OPTIONS.map((section) => (
+          <label key={section.key} className="cp-portfolio-control">
+            <span>{section.label}</span>
+            <select
+              value={value[section.key] || section.variants[0].id}
+              onChange={(e) => onChange(section.key, e.target.value)}
+              aria-label={`${section.label} component`}
+            >
+              {section.variants.map((variant) => (
+                <option key={variant.id} value={variant.id}>{variant.label}</option>
+              ))}
+            </select>
+          </label>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function InspirationTab() {
+  const [category, setCategory] = useState('All')
+  const references = getWebsiteReferencesByCategory(category)
+
+  return (
+    <div className="cp-inspiration-tab">
+      <div className="cp-inspiration-head">
+        <div>
+          <span className="cp-inspiration-kicker">Reference library</span>
+          <h2>Website inspiration</h2>
+          <p>Curated real websites for learning visual direction. These are references only; HuePrint does not copy their content, assets, or exact layouts.</p>
+        </div>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter inspiration category">
+          {WEBSITE_REFERENCE_CATEGORIES.map((item) => (
+            <option key={item} value={item}>{item}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="cp-inspiration-grid">
+        {references.map((reference) => (
+          <article key={reference.id} className="cp-inspiration-card">
+            <a href={reference.url} target="_blank" rel="noreferrer" className="cp-inspiration-shot" aria-label={`Open ${reference.name}`}>
+              <img src={reference.screenshot} alt={`${reference.name} website screenshot`} loading="lazy" />
+            </a>
+            <div className="cp-inspiration-body">
+              <div className="cp-inspiration-title-row">
+                <div>
+                  <h3>{reference.name}</h3>
+                  <span>{reference.category}</span>
+                </div>
+                <a href={reference.url} target="_blank" rel="noreferrer">Visit</a>
+              </div>
+              <div className="cp-inspiration-palette">
+                {reference.palette.map((hex) => (
+                  <span key={hex} style={{ background: hex }} title={hex} />
+                ))}
+              </div>
+              <p>{reference.typographyNotes}</p>
+              <div className="cp-inspiration-tags">
+                {reference.styleTags.map((tag) => <span key={tag}>{tag}</span>)}
+              </div>
+              <ul className="cp-inspiration-notes">
+                {reference.matchNotes.map((note) => <li key={note}>{note}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ColorUsageSection({ presetId, customRatios, onPresetChange, onCustomRatioChange }) {
+  const selectedPreset = COLOR_USAGE_PRESETS.find((preset) => preset.id === presetId) || COLOR_USAGE_PRESETS[0]
+  const ratios = presetId === 'custom' ? customRatios : selectedPreset.ratios
+
+  return (
+    <div className="cp-color-usage-section">
+      <div className="cp-section-divider">
+        <span className="cp-section-label">Color Usage</span>
+      </div>
+      <div className="cp-color-usage-note">
+        HuePrint presets guide composition for AI-generated UI. They are practical usage guidance, not official fixed ratios from Material, Carbon, or Atlassian.
+      </div>
+      <div className="cp-usage-preset-grid">
+        {COLOR_USAGE_PRESETS.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            className={`cp-usage-card ${presetId === preset.id ? 'cp-usage-card--active' : ''}`}
+            onClick={() => onPresetChange(preset.id)}
+          >
+            <span className="cp-usage-card-title">{preset.label}</span>
+            <span className="cp-usage-card-ratio">{preset.ratio}</span>
+            <span className="cp-usage-card-fit">{preset.bestFor}</span>
+            <span className="cp-usage-card-why">{preset.why}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="cp-usage-ratio-list">
+        {ratios.map((ratio, index) => (
+          <div key={`${ratio.role}-${index}`} className="cp-usage-ratio-row">
+            <div className="cp-usage-ratio-info">
+              <span className="cp-usage-ratio-label">{ratio.label}</span>
+              <span className="cp-usage-ratio-role">{ratio.role}</span>
+            </div>
+            {presetId === 'custom' ? (
+              <input
+                className="cp-usage-ratio-input"
+                type="number"
+                min="0"
+                max="100"
+                value={ratio.percent}
+                onChange={(e) => onCustomRatioChange(index, e.target.value)}
+                aria-label={`${ratio.label} percentage`}
+              />
+            ) : (
+              <span className="cp-usage-ratio-percent">{ratio.percent}%</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function BuilderTab({
+  values,
+  onChange,
+  colorUsagePresetId,
+  customColorRatios,
+  onColorUsagePresetChange,
+  onCustomColorRatioChange,
+}) {
   return (
     <div className="cp-builder-colors">
       {ROLES.map((role) => (
@@ -540,7 +1018,12 @@ function BuilderTab({ values, onChange, fontPairId, onFontPairChange }) {
           onChange={onChange}
         />
       ))}
-      <FontPairPicker value={fontPairId} onChange={onFontPairChange} />
+      <ColorUsageSection
+        presetId={colorUsagePresetId}
+        customRatios={customColorRatios}
+        onPresetChange={onColorUsagePresetChange}
+        onCustomRatioChange={onCustomColorRatioChange}
+      />
     </div>
   )
 }
@@ -653,19 +1136,26 @@ function UrlExtractTab({ onUseColors, onSwitchToColorPicker }) {
   const [extractedColors, setExtractedColors] = useState([])
   const [semantic, setSemantic] = useState({})
   const [domain, setDomain] = useState('')
+  const [accessMode, setAccessMode] = useState('public')
   const [roleMapping, setRoleMapping] = useState({})
   const [selectedRole, setSelectedRole] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
+  const [errorAlternatives, setErrorAlternatives] = useState([])
+  const [privateNetworkBlocked, setPrivateNetworkBlocked] = useState(false)
   const abortRef = useRef(null)
 
   const brandSuggestion = urlInput.trim().toLowerCase().replace(/\s+/g, '')
   const matchedBrand = Object.keys(BRAND_GUIDELINES).find((b) => b === brandSuggestion)
+  const currentHost = typeof window !== 'undefined' ? window.location.hostname : ''
+  const isLocalHuePrint = currentHost === 'localhost' || currentHost === '127.0.0.1' || currentHost === '0.0.0.0'
 
   async function handleExtractWithUrl(targetUrl) {
     const url = (targetUrl || urlInput).trim()
     if (!url) return
     setStatus('loading')
     setErrorMsg('')
+    setErrorAlternatives([])
+    setPrivateNetworkBlocked(false)
     setExtractedColors([])
     setSemantic({})
     setRoleMapping({})
@@ -684,11 +1174,14 @@ function UrlExtractTab({ onUseColors, onSwitchToColorPicker }) {
       const data = await resp.json()
       if (data.error) {
         setErrorMsg(data.message)
+        setErrorAlternatives(data.alternatives || [])
+        setPrivateNetworkBlocked(Boolean(data.privateNetworkBlocked))
         setStatus('error')
       } else {
         setExtractedColors(data.colors || [])
         setSemantic(data.semantic || {})
         setDomain(data.domain || url)
+        setAccessMode(data.accessMode || 'public')
         setRoleMapping(autoMapColors(data.colors || []))
         setStatus('success')
       }
@@ -718,7 +1211,10 @@ function UrlExtractTab({ onUseColors, onSwitchToColorPicker }) {
     setSemantic({})
     setRoleMapping({})
     setSelectedRole(null)
+    setAccessMode('public')
     setErrorMsg('')
+    setErrorAlternatives([])
+    setPrivateNetworkBlocked(false)
   }
 
   function handleRoleMappingSwatchClick(role) {
@@ -772,6 +1268,24 @@ function UrlExtractTab({ onUseColors, onSwitchToColorPicker }) {
           >
             Extract Colors →
           </button>
+          <div className={`cp-url-devmode ${isLocalHuePrint ? 'cp-url-devmode--local' : ''}`}>
+            <strong>{isLocalHuePrint ? 'Local developer mode' : 'Hosted/public mode'}</strong>
+            <span>
+              {isLocalHuePrint
+                ? 'Localhost, 127.0.0.1, and private LAN URLs are allowed while HuePrint runs locally.'
+                : 'Hosted HuePrint can only extract public websites. Localhost and private LAN URLs stay blocked.'}
+            </span>
+          </div>
+          {!isLocalHuePrint && (
+            <div className="cp-url-alternatives">
+              <span className="cp-url-alternatives-title">For local apps</span>
+              <ul>
+                <li>Paste a deployed URL from Vercel, Netlify, Replit, or similar.</li>
+                <li>Use an HTTPS tunnel URL from your local development server.</li>
+                <li>HTML/CSS upload is planned for offline local projects.</li>
+              </ul>
+            </div>
+          )}
           <div className="cp-url-brands">
             <span className="cp-url-brands-label">Or try a brand</span>
             <div className="cp-url-brand-chips">
@@ -803,6 +1317,24 @@ function UrlExtractTab({ onUseColors, onSwitchToColorPicker }) {
           <div className="cp-url-error-icon">⚠️</div>
           <p className="cp-url-error-title">We couldn't extract colors from this URL.</p>
           <p className="cp-url-error-sub">{errorMsg}</p>
+          {privateNetworkBlocked && (
+            <div className="cp-url-blocked-help">
+              <strong>Hosted HuePrint cannot reach your machine-local app.</strong>
+              <span>Try one of these instead:</span>
+              <ul>
+                {(errorAlternatives.length > 0 ? errorAlternatives : [
+                  { id: 'deployed-url', label: 'Use a deployed URL', description: 'Deploy the app and paste its public URL.' },
+                  { id: 'tunnel-url', label: 'Use a temporary tunnel', description: 'Expose your local app with an HTTPS tunnel URL.' },
+                  { id: 'html-css-upload', label: 'HTML/CSS upload', description: 'A future HuePrint flow will inspect uploaded local files.' },
+                ]).map((item) => (
+                  <li key={item.id}>
+                    <b>{item.label}</b>
+                    <span>{item.description}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="cp-url-error-actions">
             <button className="cp-url-try-again-btn" type="button" onClick={handleReset}>Try another URL</button>
             <button className="cp-url-picker-btn" type="button" onClick={onSwitchToColorPicker}>Use Color Picker instead</button>
@@ -814,7 +1346,10 @@ function UrlExtractTab({ onUseColors, onSwitchToColorPicker }) {
         <>
           <div className="cp-extract-section">
             <div className="cp-url-success-header">
-              <span className="cp-url-success-count">Found {extractedColors.length} colors from <strong>{displayDomain}</strong></span>
+              <span className="cp-url-success-count">
+                Found {extractedColors.length} colors from <strong>{displayDomain}</strong>
+                {accessMode === 'local-dev' && <em>Local dev</em>}
+              </span>
               <button className="cp-url-reset-link" onClick={handleReset}>Try another URL</button>
             </div>
             <div className="cp-extract-swatches">
@@ -894,20 +1429,52 @@ function UrlExtractTab({ onUseColors, onSwitchToColorPicker }) {
 
 export default function CreatePage() {
   const [activeTab, setActiveTab] = useState('build')
+  const [colorInputMode, setColorInputMode] = useState('manual')
   const [previewPage, setPreviewPage] = useState('components')
   const [values, setValues] = useState({ ...DEFAULT_COLORS })
   const [kitName, setKitName] = useState('')
   const [showExport, setShowExport] = useState(false)
   const [fontPairId, setFontPairId] = useState(getDefaultPair().id)
+  const [typography, setTypography] = useState(() => getDefaultTypography())
+  const [pageSections, setPageSections] = useState(() => {
+    const state = { portfolio: { ...DEFAULT_PORTFOLIO_SECTIONS } }
+    Object.keys(PREVIEW_SECTION_OPTIONS).forEach((id) => {
+      state[id] = getDefaultSections(id)
+    })
+    return state
+  })
+  const [colorUsagePresetId, setColorUsagePresetId] = useState('classic-balance')
+  const [customColorRatios, setCustomColorRatios] = useState(() => (
+    COLOR_USAGE_PRESETS.find((preset) => preset.id === 'custom')?.ratios || []
+  ))
+  const [appliedInspiration, setAppliedInspiration] = useState(null)
 
-  const selectedFontPair = FONT_PAIRS.find((p) => p.id === fontPairId) || getDefaultPair()
+  const selectedTypography = normalizeTypography(typography)
+  const selectedColorUsage = normalizeColorUsage(colorUsagePresetId, customColorRatios)
+  const referenceCategory = getPreviewReferenceCategory(previewPage)
 
   useEffect(() => {
-    loadFontPair(selectedFontPair.heading, selectedFontPair.body)
-  }, [selectedFontPair])
+    const fonts = [
+      selectedTypography.displayFont,
+      selectedTypography.headingFont,
+      selectedTypography.bodyFont,
+      selectedTypography.monoFont,
+    ]
+    Array.from(new Set(fonts.filter(Boolean))).forEach((font) => {
+      const record = getFontRecordByFamily(font)
+      if (record) {
+        loadFontRecord(record)
+      } else {
+        loadFont(font)
+      }
+    })
+  }, [selectedTypography])
 
   const hasRequiredColors = isValidHex(values.primary) && isValidHex(values.background) && isValidHex(values.text)
-  const kit = hasRequiredColors ? buildKitFromColors(values, kitName, selectedFontPair) : null
+  const baseKit = hasRequiredColors ? buildKitFromColors(values, kitName, selectedTypography, selectedColorUsage) : null
+  const kit = baseKit && appliedInspiration
+    ? { ...baseKit, inspiration: appliedInspiration }
+    : baseKit
 
   function handleColorChange(key, val) {
     setValues((prev) => ({ ...prev, [key]: val }))
@@ -922,10 +1489,56 @@ export default function CreatePage() {
     setActiveTab('build')
   }
 
+  function handleApplyInspiration(reference) {
+    const update = deriveInspirationUpdate(reference, values)
+    setValues((prev) => ({ ...prev, ...update.colors }))
+    setTypography(update.typography)
+    setColorUsagePresetId(update.colorUsagePresetId)
+    setPreviewPage(update.previewPage)
+    setAppliedInspiration(update.summary)
+    setActiveTab('build')
+  }
+
   function handleFontPairChange(id) {
     setFontPairId(id)
     const pair = FONT_PAIRS.find((p) => p.id === id)
-    if (pair) loadFontPair(pair.heading, pair.body)
+    if (pair) {
+      setTypography((prev) => normalizeTypography({
+        ...prev,
+        headingFont: pair.heading,
+        bodyFont: pair.body,
+        displayFont: prev.mode === 'three' || prev.mode === 'four' ? prev.displayFont : pair.heading,
+      }))
+    }
+  }
+
+  function handleTypographyChange(nextTypography) {
+    setTypography(normalizeTypography(nextTypography))
+  }
+
+  function handleTypographyPreset(preset) {
+    setTypography((prev) => normalizeTypography({
+      ...prev,
+      ...preset,
+      mode: 'four',
+    }))
+  }
+
+  function handleColorUsagePresetChange(id) {
+    setColorUsagePresetId(id)
+  }
+
+  function handleCustomColorRatioChange(index, percent) {
+    setCustomColorRatios((prev) => prev.map((ratio, i) => (
+      i === index ? { ...ratio, percent } : ratio
+    )))
+  }
+
+  function handleSectionChange(previewId, sectionKey, variantId) {
+    setPageSections((prev) => ({
+      ...prev,
+      [previewId]: { ...prev[previewId], [sectionKey]: variantId },
+    }))
   }
 
   return (
@@ -947,45 +1560,76 @@ export default function CreatePage() {
               Color Picker
             </button>
             <button
+              className={`cp-tab ${activeTab === 'typography' ? 'cp-tab--active' : ''}`}
+              onClick={() => setActiveTab('typography')}
+              type="button"
+            >
+              Typography
+            </button>
+            <button
+              className={`cp-tab ${activeTab === 'inspiration' ? 'cp-tab--active' : ''}`}
+              onClick={() => setActiveTab('inspiration')}
+              type="button"
+            >
+              Inspiration
+            </button>
+            <button
               className={`cp-tab ${activeTab === 'import' ? 'cp-tab--active' : ''}`}
               onClick={() => setActiveTab('import')}
               type="button"
             >
               Import JSON
             </button>
-            <button
-              className={`cp-tab ${activeTab === 'extract' ? 'cp-tab--active' : ''}`}
-              onClick={() => setActiveTab('extract')}
-              type="button"
-            >
-              From URL
-            </button>
           </div>
 
           <div className="cp-left-body">
             {activeTab === 'build' ? (
-              <>
-                <div className="cp-kit-name-row">
-                  <label className="cp-kit-name-label">Kit Name</label>
-                  <input
-                    className="cp-kit-name-input"
-                    type="text"
-                    placeholder="My Brand Kit"
-                    value={kitName}
-                    onChange={(e) => setKitName(e.target.value)}
-                  />
-                </div>
-                <BuilderTab
-                  values={values}
-                  onChange={handleColorChange}
-                  fontPairId={fontPairId}
-                  onFontPairChange={handleFontPairChange}
+              colorInputMode === 'extract' ? (
+                <UrlExtractTab
+                  onUseColors={(data) => { handleImport(data); setColorInputMode('manual') }}
+                  onSwitchToColorPicker={() => setColorInputMode('manual')}
                 />
-              </>
-            ) : activeTab === 'import' ? (
-              <ImportTab onImport={handleImport} />
+              ) : (
+                <>
+                  <div className="cp-kit-name-row">
+                    <label className="cp-kit-name-label">Kit Name</label>
+                    <input
+                      className="cp-kit-name-input"
+                      type="text"
+                      placeholder="My Brand Kit"
+                      value={kitName}
+                      onChange={(e) => setKitName(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    className="cp-extract-from-url-btn"
+                    type="button"
+                    onClick={() => setColorInputMode('extract')}
+                  >
+                    ↗ Extract from URL
+                  </button>
+                  <BuilderTab
+                    values={values}
+                    onChange={handleColorChange}
+                    colorUsagePresetId={colorUsagePresetId}
+                    customColorRatios={customColorRatios}
+                    onColorUsagePresetChange={handleColorUsagePresetChange}
+                    onCustomColorRatioChange={handleCustomColorRatioChange}
+                  />
+                </>
+              )
+            ) : activeTab === 'typography' ? (
+              <TypographyTab
+                typography={selectedTypography}
+                starterPairId={fontPairId}
+                onTypographyChange={handleTypographyChange}
+                onApplyPair={handleFontPairChange}
+                onApplyPreset={handleTypographyPreset}
+              />
+            ) : activeTab === 'inspiration' ? (
+              <InspirationTab />
             ) : (
-              <UrlExtractTab onUseColors={handleImport} onSwitchToColorPicker={() => setActiveTab('build')} />
+              <ImportTab onImport={handleImport} />
             )}
           </div>
 
@@ -1024,8 +1668,7 @@ export default function CreatePage() {
               <span className="cp-preview-hint">Set Primary, Background &amp; Text to see preview</span>
             )}
           </div>
-
-          <div className="cp-preview-body">
+          <div className={`cp-preview-body${previewPage === 'components' || previewPage === 'saas' ? ' cp-preview-body--padded' : ''}`}>
             {!hasRequiredColors ? (
               <div className="cp-preview-empty">
                 <div className="cp-preview-empty-icon">🎨</div>
@@ -1035,11 +1678,40 @@ export default function CreatePage() {
               <LivePreviewComponents kit={kit} />
             ) : previewPage === 'saas' ? (
               <LivePreviewApp kit={kit} />
+            ) : previewPage === 'portfolio' ? (
+              <PreviewPortfolio
+                kit={kit}
+                sectionConfig={pageSections.portfolio || {}}
+                onSectionChange={(key, val) => handleSectionChange('portfolio', key, val)}
+              />
             ) : (() => {
               const page = PREVIEW_PAGES.find((p) => p.id === previewPage)
               const PageComponent = page?.component
-              return PageComponent ? <PageComponent kit={kit} /> : null
+              return PageComponent ? (
+                <PageComponent
+                  kit={kit}
+                  sectionConfig={pageSections[previewPage] || {}}
+                  onSectionChange={(key, val) => handleSectionChange(previewPage, key, val)}
+                />
+              ) : null
             })()}
+            {hasRequiredColors && (
+              <SimilarWebsitesPanel
+                kit={kit}
+                category={referenceCategory}
+                title="Similar Websites"
+                description="Ranked by your palette, contrast mood, and the selected preview type."
+                limit={4}
+                variant="preview"
+                onUseReference={handleApplyInspiration}
+              />
+            )}
+            {appliedInspiration && hasRequiredColors && (
+              <div className="cp-inspiration-applied">
+                <strong>Inspired by {appliedInspiration.sourceName}</strong>
+                <span>{appliedInspiration.note}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

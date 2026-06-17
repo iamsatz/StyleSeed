@@ -1,9 +1,14 @@
 .industry-filter {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   margin-bottom: 32px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.industry-filter::-webkit-scrollbar { display: none; }
 
 .industry-filter-tab {
   padding: 8px 18px;

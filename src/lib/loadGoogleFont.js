@@ -17,3 +17,20 @@ export function loadFontPair(headingFont, bodyFont) {
   if (headingFont) loadFont(headingFont)
   if (bodyFont && bodyFont !== headingFont) loadFont(bodyFont)
 }
+
+export function loadFontRecord(font) {
+  if (!font?.family) return
+  if (!font.cssEmbedUrl) {
+    loadFont(font.family)
+    return
+  }
+  const key = `${font.family}:${font.cssEmbedUrl}`
+  if (loadedFonts.has(key)) return
+  loadedFonts.add(key)
+  const existing = document.querySelector(`link[href="${font.cssEmbedUrl}"]`)
+  if (existing) return
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = font.cssEmbedUrl
+  document.head.appendChild(link)
+}

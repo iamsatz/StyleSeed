@@ -1,90 +1,363 @@
 import React, { useRef, useEffect } from 'react'
+import { DEFAULT_PORTFOLIO_SECTIONS, PORTFOLIO_SECTION_OPTIONS } from '../../../lib/portfolioPreviewOptions'
+import SectionWrapper from './SectionWrapper'
 
-export default function PreviewPortfolio({ kit }) {
-  const ref = useRef(null)
-  useEffect(() => {
-    if (!ref.current || !kit) return
-    const el = ref.current
-    const palette = kit.palette.light
-    const roles = ['background', 'surface', 'primary', 'secondary', 'accent', 'text', 'textMuted', 'border', 'success', 'warning']
-    roles.forEach((role) => { if (palette[role]) el.style.setProperty(`--hp-${role}`, palette[role]) })
-    if (kit.typography) {
-      if (kit.typography.headingFont) el.style.setProperty('--hp-heading-font', `'${kit.typography.headingFont}', sans-serif`)
-      if (kit.typography.bodyFont) el.style.setProperty('--hp-body-font', `'${kit.typography.bodyFont}', sans-serif`)
-    }
-  }, [kit])
-  if (!kit) return null
+const CLIENTS = ['Northstar', 'Atlas', 'Luma', 'Kite', 'Signal', 'Bento']
+const CASE_STUDIES = [
+  { title: 'Design system for an AI product suite', category: 'AI', summary: 'A reusable interface foundation for complex workflows, analytics, and onboarding.' },
+  { title: 'Healthcare operations dashboard', category: 'Health', summary: 'A calmer daily workspace for teams reviewing high-volume patient activity.' },
+  { title: 'Commerce workflow redesign', category: 'Retail', summary: 'Checkout, catalog, and internal tools shaped around faster decisions.' },
+]
+const PROJECTS = ['Figma Plugin', 'Compliance Portal', 'Insurance Quote Flow', 'Meeting Notes AI', 'Farm Ops', 'Voice Review']
+const EXPLORATIONS = [
+  { title: 'Design token auditor', tag: 'Developer Tools' },
+  { title: 'Browser workflow assistant', tag: 'Productivity' },
+  { title: 'Weather actions app', tag: 'Consumer App' },
+  { title: 'AI learning companion', tag: 'EdTech' },
+]
+
+function applyPreviewTheme(el, kit) {
+  if (!el || !kit) return
+  const palette = kit.palette.light
+  const roles = ['background', 'surface', 'primary', 'secondary', 'accent', 'text', 'textMuted', 'border', 'success', 'warning']
+  roles.forEach((role) => { if (palette[role]) el.style.setProperty(`--hp-${role}`, palette[role]) })
+  if (kit.typography) {
+    const headingFont = kit.typography.headingFont || kit.typography.displayFont
+    const bodyFont = kit.typography.bodyFont || headingFont
+    const displayFont = kit.typography.displayFont || headingFont
+    const monoFont = kit.typography.monoFont || 'JetBrains Mono'
+    if (displayFont) el.style.setProperty('--hp-display-font', `'${displayFont}', sans-serif`)
+    if (headingFont) el.style.setProperty('--hp-heading-font', `'${headingFont}', sans-serif`)
+    if (bodyFont) el.style.setProperty('--hp-body-font', `'${bodyFont}', sans-serif`)
+    if (monoFont) el.style.setProperty('--hp-mono-font', `'${monoFont}', monospace`)
+  }
+}
+
+function SectionHeading({ eyebrow, title, action }) {
+  return (
+    <div className="lp-port-section-head">
+      <div>
+        <div className="lp-port-eyebrow">{eyebrow}</div>
+        <h2 className="lp-port-section-title">{title}</h2>
+      </div>
+      {action && <button className="lp-btn lp-btn--ghost lp-btn--sm">{action}</button>}
+    </div>
+  )
+}
+
+function PortfolioHero({ variant }) {
+  if (variant === 'statement') {
+    return (
+      <section className="lp-port-hero lp-port-hero--statement">
+        <div className="lp-port-eyebrow">Independent product designer</div>
+        <h1 className="lp-port-title">Designing useful products, durable systems, and thoughtful AI workflows.</h1>
+        <p className="lp-port-sub">A portfolio structure for testing hierarchy, credibility, selected work, experiments, and contact flow with your kit.</p>
+        <div className="lp-app-hero-ctas">
+          <button className="lp-btn lp-btn--primary">View case studies</button>
+          <button className="lp-btn lp-btn--ghost">Say hello</button>
+        </div>
+      </section>
+    )
+  }
+
+  if (variant === 'split') {
+    return (
+      <section className="lp-port-hero lp-port-hero--split">
+        <div>
+          <div className="lp-port-eyebrow">Portfolio preview</div>
+          <h1 className="lp-port-title">Product design for teams shipping complex tools.</h1>
+          <p className="lp-port-sub">Use this structure to test personal-brand pages, agency sites, and portfolio systems without copying a third-party design.</p>
+        </div>
+        <div className="lp-port-profile-panel">
+          <div className="lp-port-avatar">AK</div>
+          <strong>Available for selected work</strong>
+          <span>Design systems, dashboards, SaaS UX</span>
+        </div>
+      </section>
+    )
+  }
 
   return (
-    <div className="lp-page" ref={ref}>
-      <nav className="lp-app-nav">
-        <div className="lp-app-logo" style={{ fontWeight: 800, color: 'var(--hp-text, #111827)' }}>Jane Doe</div>
-        <div className="lp-app-nav-links">
-          <a className="lp-app-nav-link lp-app-nav-link--active">Work</a>
-          <a className="lp-app-nav-link">About</a>
-          <a className="lp-app-nav-link">Writing</a>
-          <a className="lp-app-nav-link">Contact</a>
-        </div>
-        <button className="lp-btn lp-btn--primary lp-btn--sm">Hire me</button>
-      </nav>
+    <section className="lp-port-hero">
+      <div className="lp-port-avatar">AK</div>
+      <div className="lp-port-eyebrow">Product designer</div>
+      <h1 className="lp-port-title">I shape interfaces, systems, and product stories.</h1>
+      <p className="lp-port-sub">A structured portfolio preview with hero, clients, case studies, projects, explorations, contact, and footer sections.</p>
+      <div className="lp-app-hero-ctas">
+        <button className="lp-btn lp-btn--primary">View work</button>
+        <button className="lp-btn lp-btn--ghost">Download profile</button>
+      </div>
+    </section>
+  )
+}
 
-      <section className="lp-port-hero">
-        <div className="lp-port-avatar" style={{ width: 72, height: 72, fontSize: '1.5rem' }}>JD</div>
-        <h1 className="lp-app-hero-h1" style={{ marginBottom: 8 }}>Hi, I'm Jane Doe 👋</h1>
-        <p className="lp-app-hero-sub" style={{ marginBottom: 4 }}>Product designer crafting experiences that are beautiful, accessible, and impactful.</p>
-        <p style={{ fontSize: '0.875rem', color: 'var(--hp-textMuted, #6b7280)', marginBottom: 20 }}>Currently @ Acme Co. · Previously Figma, Stripe</p>
-        <div className="lp-app-hero-ctas">
-          <button className="lp-btn lp-btn--primary">View my work</button>
-          <button className="lp-btn lp-btn--ghost">Download CV</button>
-        </div>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 16 }}>
-          {[['Twitter', '@janedoe'], ['Dribbble', 'janedoe'], ['LinkedIn', 'janedoe']].map(([platform, handle], i) => (
-            <a key={i} style={{ fontSize: '0.75rem', color: 'var(--hp-primary, #7c3aed)', cursor: 'pointer' }}>{platform}</a>
+function ClientsSection({ variant }) {
+  if (variant === 'metrics') {
+    return (
+      <section className="lp-port-section lp-port-section--surface">
+        <SectionHeading eyebrow="Credibility" title="Selected proof points" />
+        <div className="lp-port-metrics">
+          {['12+ yrs', '40+ launches', '8 industries'].map((metric, index) => (
+            <div className="lp-port-metric" key={metric}>
+              <strong>{metric}</strong>
+              <span>{['Product design', 'End-to-end work', 'Domain range'][index]}</span>
+            </div>
           ))}
         </div>
       </section>
+    )
+  }
 
-      <section style={{ padding: '24px 28px', background: 'var(--hp-background, #fff)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div className="lp-comp-label" style={{ margin: 0 }}>Selected Projects</div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {['All', 'UX', 'Product', 'Systems'].map((tag, i) => (
-              <button key={i} className={`lp-chip ${i === 0 ? 'lp-chip--active' : ''}`}>{tag}</button>
-            ))}
-          </div>
+  if (variant === 'text-list') {
+    return (
+      <section className="lp-port-section lp-port-section--surface">
+        <SectionHeading eyebrow="Clients" title="Teams and domains" />
+        <div className="lp-port-text-list">
+          {['AI personalization', 'Health operations', 'Commerce tooling', 'Financial workflows'].map((item) => (
+            <span key={item}>{item}</span>
+          ))}
         </div>
-        <div className="lp-port-grid">
-          {[
-            { title: 'E-Commerce Redesign', tag: 'UX Design', year: '2024', icon: '🛒', color: 'var(--hp-primary, #7c3aed)' },
-            { title: 'Mobile Banking App', tag: 'Product', year: '2024', icon: '🏦', color: 'var(--hp-secondary, #a855f7)' },
-            { title: 'Brand Design System', tag: 'Systems', year: '2023', icon: '🎨', color: 'var(--hp-accent, #0ea5e9)' },
-          ].map((p, i) => (
-            <div key={i} className="lp-port-card">
-              <div className="lp-port-img" style={{ background: p.color, height: 90, opacity: 0.85 }}>
-                <span style={{ fontSize: '2.5rem' }}>{p.icon}</span>
+      </section>
+    )
+  }
+
+  return (
+    <section className="lp-port-section lp-port-section--surface">
+      <SectionHeading eyebrow="Clients" title="Teams I have worked with" />
+      <div className="lp-port-client-strip">
+        {CLIENTS.map((client) => <span key={client}>{client}</span>)}
+      </div>
+    </section>
+  )
+}
+
+function CaseStudiesSection({ variant }) {
+  if (variant === 'numbered-list') {
+    return (
+      <section className="lp-port-section">
+        <SectionHeading eyebrow="Case studies" title="Detailed product stories" />
+        <div className="lp-port-numbered">
+          {CASE_STUDIES.map((item, index) => (
+            <div className="lp-port-numbered-row" key={item.title}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <strong>{item.title}</strong>
+                <p>{item.summary}</p>
               </div>
-              <div className="lp-port-card-body">
-                <div className="lp-port-card-title">{p.title}</div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className="lp-badge lp-badge--secondary" style={{ fontSize: '0.6875rem' }}>{p.tag}</span>
-                  <span style={{ fontSize: '0.6875rem', color: 'var(--hp-textMuted, #9ca3af)' }}>{p.year}</span>
-                </div>
+              <em>{item.category}</em>
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  const stacked = variant === 'stacked-stories'
+  return (
+    <section className="lp-port-section">
+      <SectionHeading eyebrow="Case studies" title="Projects with deeper product thinking" />
+      <div className={stacked ? 'lp-port-story-stack' : 'lp-port-case-grid'}>
+        {CASE_STUDIES.map((item) => (
+          <article className="lp-port-case-card" key={item.title}>
+            <span className="lp-badge lp-badge--secondary">{item.category}</span>
+            <h3>{item.title}</h3>
+            <p>{item.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ProjectsSection({ variant }) {
+  if (variant === 'index-list') {
+    return (
+      <section className="lp-port-section lp-port-section--surface">
+        <SectionHeading eyebrow="Selected projects" title="Representative work" action="View archive" />
+        <div className="lp-port-project-index">
+          {PROJECTS.map((project, index) => (
+            <div className="lp-port-project-row" key={project}>
+              <span>{project}</span>
+              <em>{index % 2 === 0 ? 'Product' : 'Systems'}</em>
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="lp-port-section lp-port-section--surface">
+      <SectionHeading eyebrow="Selected projects" title="A tighter project sample" action="View more" />
+      <div className={variant === 'media-grid' ? 'lp-port-project-grid lp-port-project-grid--media' : 'lp-port-project-grid'}>
+        {PROJECTS.map((project, index) => (
+          <article className="lp-port-project-card" key={project}>
+            <div className="lp-port-project-thumb">{index + 1}</div>
+            <strong>{project}</strong>
+            <span>{index % 2 === 0 ? 'Interface' : 'Workflow'}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ExplorationsSection({ variant }) {
+  if (variant === 'tag-cloud') {
+    return (
+      <section className="lp-port-section">
+        <SectionHeading eyebrow="Explorations" title="Small concepts and experiments" />
+        <div className="lp-port-tag-cloud">
+          {EXPLORATIONS.flatMap((item) => [item.title, item.tag]).map((tag) => <span key={tag}>{tag}</span>)}
+        </div>
+      </section>
+    )
+  }
+
+  if (variant === 'timeline') {
+    return (
+      <section className="lp-port-section">
+        <SectionHeading eyebrow="Explorations" title="Current thinking" />
+        <div className="lp-port-timeline">
+          {EXPLORATIONS.map((item, index) => (
+            <div className="lp-port-timeline-item" key={item.title}>
+              <span>{index + 1}</span>
+              <div>
+                <strong>{item.title}</strong>
+                <em>{item.tag}</em>
               </div>
             </div>
           ))}
         </div>
       </section>
+    )
+  }
 
-      <section style={{ padding: '20px 28px 24px', background: 'var(--hp-surface, #f9fafb)', borderTop: '1.5px solid var(--hp-border, #e5e7eb)' }}>
-        <div className="lp-comp-label" style={{ marginBottom: 12 }}>Skills & Tools</div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {['Figma', 'Prototyping', 'Design Systems', 'User Research', 'Framer', 'React', 'TypeScript', 'Accessibility'].map((skill, i) => (
-            <span key={i} style={{ padding: '5px 12px', background: 'var(--hp-background, #fff)', border: '1.5px solid var(--hp-border, #e5e7eb)', borderRadius: 20, fontSize: '0.8125rem', color: 'var(--hp-text, #374151)', fontWeight: 500 }}>
-              {skill}
-            </span>
-          ))}
-        </div>
+  return (
+    <section className="lp-port-section">
+      <SectionHeading eyebrow="Explorations" title="Side experiments" />
+      <div className="lp-port-explore-grid">
+        {EXPLORATIONS.map((item) => (
+          <article className="lp-port-explore-card" key={item.title}>
+            <strong>{item.title}</strong>
+            <span>{item.tag}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ContactSection({ variant }) {
+  if (variant === 'minimal') {
+    return (
+      <section className="lp-port-contact lp-port-contact--minimal">
+        <strong>Have a project in mind?</strong>
+        <span>hello@example.com</span>
       </section>
+    )
+  }
+
+  if (variant === 'availability') {
+    return (
+      <section className="lp-port-contact">
+        <div>
+          <div className="lp-port-eyebrow">Availability</div>
+          <h2>Selective collaborations through 2026.</h2>
+          <p>Useful for portfolio pages that need a calmer consulting or freelance call-to-action.</p>
+        </div>
+        <button className="lp-btn lp-btn--primary">Start a conversation</button>
+      </section>
+    )
+  }
+
+  return (
+    <section className="lp-port-contact">
+      <div>
+        <div className="lp-port-eyebrow">Contact</div>
+        <h2>Have a product or design-system problem?</h2>
+        <p>Use this section to test CTA color, email prominence, and compact conversion copy.</p>
+      </div>
+      <button className="lp-btn lp-btn--primary">hello@example.com</button>
+    </section>
+  )
+}
+
+function FooterSection({ variant }) {
+  if (variant === 'social-row') {
+    return (
+      <footer className="lp-port-footer">
+        <strong>Alex Kim</strong>
+        <div className="lp-port-footer-links">
+          <a>LinkedIn</a>
+          <a>Portfolio</a>
+          <a>Newsletter</a>
+        </div>
+      </footer>
+    )
+  }
+
+  if (variant === 'minimal') {
+    return <footer className="lp-port-footer"><span>Alex Kim - Portfolio preview</span></footer>
+  }
+
+  return (
+    <footer className="lp-port-footer">
+      <strong>Alex Kim</strong>
+      <div className="lp-port-footer-links">
+        <a>Home</a>
+        <a>Case Studies</a>
+        <a>Projects</a>
+        <a>Explorations</a>
+      </div>
+      <span>Back to top</span>
+    </footer>
+  )
+}
+
+export default function PreviewPortfolio({ kit, sectionConfig = DEFAULT_PORTFOLIO_SECTIONS, onSectionChange }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    applyPreviewTheme(ref.current, kit)
+  }, [kit])
+  if (!kit) return null
+
+  const config = { ...DEFAULT_PORTFOLIO_SECTIONS, ...sectionConfig }
+
+  function wrap(sectionKey, children) {
+    const sectionDef = PORTFOLIO_SECTION_OPTIONS.find((s) => s.key === sectionKey)
+    return (
+      <SectionWrapper
+        key={sectionKey}
+        label={sectionDef?.label || sectionKey}
+        sectionKey={sectionKey}
+        variants={sectionDef?.variants || []}
+        currentVariant={config[sectionKey]}
+        onSectionChange={onSectionChange}
+      >
+        {children}
+      </SectionWrapper>
+    )
+  }
+
+  return (
+    <div className="lp-page lp-port-page" ref={ref}>
+      <nav className="lp-app-nav lp-port-nav">
+        <div className="lp-app-logo" style={{ fontWeight: 800, color: 'var(--hp-text, #111827)' }}>Alex Kim</div>
+        <div className="lp-app-nav-links">
+          <a className="lp-app-nav-link lp-app-nav-link--active">Case Studies</a>
+          <a className="lp-app-nav-link">Projects</a>
+          <a className="lp-app-nav-link">Explorations</a>
+        </div>
+        <button className="lp-btn lp-btn--primary lp-btn--sm">Say hello</button>
+      </nav>
+      {wrap('hero', <PortfolioHero variant={config.hero} />)}
+      {wrap('clients', <ClientsSection variant={config.clients} />)}
+      {wrap('caseStudies', <CaseStudiesSection variant={config.caseStudies} />)}
+      {wrap('projects', <ProjectsSection variant={config.projects} />)}
+      {wrap('explorations', <ExplorationsSection variant={config.explorations} />)}
+      {wrap('contact', <ContactSection variant={config.contact} />)}
+      {wrap('footer', <FooterSection variant={config.footer} />)}
     </div>
   )
 }

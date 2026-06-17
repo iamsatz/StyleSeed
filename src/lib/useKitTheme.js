@@ -28,8 +28,14 @@ export function useKitTheme(kit, mode) {
     })
 
     if (kit.typography) {
-      if (kit.typography.headingFont) el.style.setProperty('--hp-heading-font', `'${kit.typography.headingFont}', sans-serif`)
-      if (kit.typography.bodyFont) el.style.setProperty('--hp-body-font', `'${kit.typography.bodyFont}', sans-serif`)
+      const headingFont = kit.typography.headingFont || kit.typography.displayFont
+      const bodyFont = kit.typography.bodyFont || headingFont
+      const displayFont = kit.typography.displayFont || headingFont
+      const monoFont = kit.typography.monoFont || 'JetBrains Mono'
+      if (displayFont) el.style.setProperty('--hp-display-font', `'${displayFont}', sans-serif`)
+      if (headingFont) el.style.setProperty('--hp-heading-font', `'${headingFont}', sans-serif`)
+      if (bodyFont) el.style.setProperty('--hp-body-font', `'${bodyFont}', sans-serif`)
+      if (monoFont) el.style.setProperty('--hp-mono-font', `'${monoFont}', monospace`)
       if (kit.typography.baseFontSize) el.style.setProperty('--hp-font-size', kit.typography.baseFontSize)
       if (kit.typography.lineHeight) el.style.setProperty('--hp-line-height', kit.typography.lineHeight)
     }
