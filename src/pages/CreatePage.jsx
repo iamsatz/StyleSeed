@@ -54,6 +54,11 @@ import PreviewJobBoard from '../components/create/previews/PreviewJobBoard'
 import PreviewAnalytics from '../components/create/previews/PreviewAnalytics'
 import PreviewError404 from '../components/create/previews/PreviewError404'
 import PreviewWaitlist from '../components/create/previews/PreviewWaitlist'
+import PreviewFinance from '../components/create/previews/PreviewFinance'
+import PreviewHealth from '../components/create/previews/PreviewHealth'
+import PreviewEducation from '../components/create/previews/PreviewEducation'
+import PreviewTravel from '../components/create/previews/PreviewTravel'
+import PreviewNonprofit from '../components/create/previews/PreviewNonprofit'
 import SimilarWebsitesPanel from '../components/inspiration/SimilarWebsitesPanel'
 import './CreatePage.css'
 
@@ -79,6 +84,11 @@ const PREVIEW_PAGES = [
   { id: 'analytics', icon: '📈', label: 'Analytics', component: PreviewAnalytics },
   { id: 'error', icon: '⚠️', label: '404 / Error', component: PreviewError404 },
   { id: 'waitlist', icon: '⏳', label: 'Waitlist / Coming Soon', component: PreviewWaitlist },
+  { id: 'finance', icon: '🏦', label: 'Finance / Banking', component: PreviewFinance },
+  { id: 'health', icon: '🩺', label: 'Healthcare Portal', component: PreviewHealth },
+  { id: 'education', icon: '🎓', label: 'Education / LMS', component: PreviewEducation },
+  { id: 'travel', icon: '✈️', label: 'Travel Booking', component: PreviewTravel },
+  { id: 'nonprofit', icon: '💚', label: 'Nonprofit / Cause', component: PreviewNonprofit },
 ]
 
 const PREVIEW_REFERENCE_CATEGORIES = {
@@ -95,6 +105,11 @@ const PREVIEW_REFERENCE_CATEGORIES = {
   signin: 'Productivity',
   signup: 'Productivity',
   onboarding: 'Productivity',
+  finance: 'Finance',
+  health: 'Health',
+  education: 'Education',
+  travel: 'Travel',
+  nonprofit: 'Non-profit',
 }
 
 function getPreviewReferenceCategory(previewPage) {

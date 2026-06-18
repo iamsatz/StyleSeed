@@ -280,6 +280,96 @@ export const PREVIEW_SECTION_OPTIONS = {
       { id: 'with-perks', label: 'With perks' },
     ]},
   ],
+  finance: [
+    { key: 'nav', label: 'Navigation', variants: [
+      { id: 'sidebar-dark', label: 'Dark sidebar' },
+      { id: 'sidebar-light', label: 'Light sidebar' },
+      { id: 'topbar', label: 'Top bar' },
+    ]},
+    { key: 'accounts', label: 'Accounts', variants: [
+      { id: 'cards', label: 'Metric cards' },
+      { id: 'list', label: 'Account list' },
+      { id: 'compact', label: 'Net worth' },
+    ]},
+    { key: 'chart', label: 'Chart', variants: [
+      { id: 'spending', label: 'Spending' },
+      { id: 'income', label: 'Income vs spending' },
+      { id: 'portfolio', label: 'Portfolio' },
+    ]},
+    { key: 'transactions', label: 'Transactions', variants: [
+      { id: 'full', label: 'Full list' },
+      { id: 'compact', label: 'Compact' },
+      { id: 'grouped', label: 'By category' },
+    ]},
+  ],
+  health: [
+    { key: 'header', label: 'Header', variants: [
+      { id: 'patient', label: 'Patient card' },
+      { id: 'clinic', label: 'Clinic nav' },
+      { id: 'minimal', label: 'Minimal' },
+    ]},
+    { key: 'appointments', label: 'Appointments', variants: [
+      { id: 'calendar', label: 'Calendar week' },
+      { id: 'list', label: 'List view' },
+      { id: 'upcoming', label: 'Next visit' },
+    ]},
+    { key: 'vitals', label: 'Vitals', variants: [
+      { id: 'charts', label: 'Charts' },
+      { id: 'cards', label: 'Stat cards' },
+      { id: 'meds', label: 'Prescriptions' },
+    ]},
+  ],
+  education: [
+    { key: 'hero', label: 'Hero', variants: [
+      { id: 'search', label: 'Search bar' },
+      { id: 'featured', label: 'Featured course' },
+      { id: 'categories', label: 'Browse categories' },
+    ]},
+    { key: 'courses', label: 'Courses', variants: [
+      { id: 'grid', label: 'Grid' },
+      { id: 'list', label: 'List' },
+      { id: 'featured', label: 'Continue learning' },
+    ]},
+    { key: 'progress', label: 'Progress', variants: [
+      { id: 'dashboard', label: 'Stats dashboard' },
+      { id: 'stats', label: 'Weekly stats' },
+      { id: 'activity', label: 'Activity feed' },
+    ]},
+  ],
+  travel: [
+    { key: 'search', label: 'Search', variants: [
+      { id: 'full-width', label: 'Full width' },
+      { id: 'split', label: 'Split hero' },
+      { id: 'compact', label: 'Compact bar' },
+    ]},
+    { key: 'results', label: 'Results', variants: [
+      { id: 'grid', label: 'Destination grid' },
+      { id: 'list', label: 'List view' },
+      { id: 'map', label: 'Map view' },
+    ]},
+    { key: 'card', label: 'Deal card', variants: [
+      { id: 'full', label: 'Full details' },
+      { id: 'compact', label: 'Quick picks' },
+      { id: 'deal', label: 'Flash deal' },
+    ]},
+  ],
+  nonprofit: [
+    { key: 'hero', label: 'Hero', variants: [
+      { id: 'impact', label: 'Impact statement' },
+      { id: 'cause', label: 'Cause focus' },
+      { id: 'campaign', label: 'Active campaign' },
+    ]},
+    { key: 'stats', label: 'Impact stats', variants: [
+      { id: 'counter', label: 'Counters' },
+      { id: 'progress', label: 'Goal progress' },
+      { id: 'testimonials', label: 'Testimonials' },
+    ]},
+    { key: 'cta', label: 'Call to action', variants: [
+      { id: 'donate-form', label: 'Donate form' },
+      { id: 'campaigns', label: 'Campaign grid' },
+      { id: 'volunteer', label: 'How to help' },
+    ]},
+  ],
 }
 
 export function getDefaultSections(previewId) {
