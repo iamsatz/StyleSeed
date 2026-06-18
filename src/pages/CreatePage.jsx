@@ -24,10 +24,6 @@ import {
 } from '../lib/fontSuggestions'
 import { deriveInspirationUpdate } from '../lib/inspirationAdapters'
 import {
-  WEBSITE_REFERENCE_CATEGORIES,
-  getWebsiteReferencesByCategory,
-} from '../lib/websiteReferences'
-import {
   TYPOGRAPHY_MODES,
   TYPOGRAPHY_ROLES,
   TYPOGRAPHY_PRESETS,
@@ -904,59 +900,6 @@ function PortfolioSectionControls({ value, onChange }) {
   )
 }
 
-function InspirationTab() {
-  const [category, setCategory] = useState('All')
-  const references = getWebsiteReferencesByCategory(category)
-
-  return (
-    <div className="cp-inspiration-tab">
-      <div className="cp-inspiration-head">
-        <div>
-          <span className="cp-inspiration-kicker">Reference library</span>
-          <h2>Website inspiration</h2>
-          <p>Curated real websites for learning visual direction. These are references only; HuePrint does not copy their content, assets, or exact layouts.</p>
-        </div>
-        <select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter inspiration category">
-          {WEBSITE_REFERENCE_CATEGORIES.map((item) => (
-            <option key={item} value={item}>{item}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="cp-inspiration-grid">
-        {references.map((reference) => (
-          <article key={reference.id} className="cp-inspiration-card">
-            <a href={reference.url} target="_blank" rel="noreferrer" className="cp-inspiration-shot" aria-label={`Open ${reference.name}`}>
-              <img src={reference.screenshot} alt={`${reference.name} website screenshot`} loading="lazy" />
-            </a>
-            <div className="cp-inspiration-body">
-              <div className="cp-inspiration-title-row">
-                <div>
-                  <h3>{reference.name}</h3>
-                  <span>{reference.category}</span>
-                </div>
-                <a href={reference.url} target="_blank" rel="noreferrer">Visit</a>
-              </div>
-              <div className="cp-inspiration-palette">
-                {reference.palette.map((hex) => (
-                  <span key={hex} style={{ background: hex }} title={hex} />
-                ))}
-              </div>
-              <p>{reference.typographyNotes}</p>
-              <div className="cp-inspiration-tags">
-                {reference.styleTags.map((tag) => <span key={tag}>{tag}</span>)}
-              </div>
-              <ul className="cp-inspiration-notes">
-                {reference.matchNotes.map((note) => <li key={note}>{note}</li>)}
-              </ul>
-            </div>
-          </article>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 function ColorUsageSection({ presetId, customRatios, onPresetChange, onCustomRatioChange }) {
   const selectedPreset = COLOR_USAGE_PRESETS.find((preset) => preset.id === presetId) || COLOR_USAGE_PRESETS[0]
   const ratios = presetId === 'custom' ? customRatios : selectedPreset.ratios
@@ -1618,6 +1561,7 @@ export default function CreatePage() {
   const [activeTab, setActiveTab] = useState('build')
   const [colorInputMode, setColorInputMode] = useState('manual')
   const [previewPage, setPreviewPage] = useState('components')
+  const [rightTab, setRightTab] = useState('preview')
   const [values, setValues] = useState({ ...DEFAULT_COLORS })
   const [kitName, setKitName] = useState('')
   const [showExport, setShowExport] = useState(false)
@@ -1758,13 +1702,6 @@ export default function CreatePage() {
               Typography
             </button>
             <button
-              className={`cp-tab ${activeTab === 'inspiration' ? 'cp-tab--active' : ''}`}
-              onClick={() => setActiveTab('inspiration')}
-              type="button"
-            >
-              Inspiration
-            </button>
-            <button
               className={`cp-tab ${activeTab === 'import' ? 'cp-tab--active' : ''}`}
               onClick={() => setActiveTab('import')}
               type="button"
@@ -1833,8 +1770,6 @@ export default function CreatePage() {
                 onApplyPair={handleFontPairChange}
                 onApplyPreset={handleTypographyPreset}
               />
-            ) : activeTab === 'inspiration' ? (
-              <InspirationTab />
             ) : (
               <ImportTab onImport={handleImport} />
             )}
@@ -1858,68 +1793,99 @@ export default function CreatePage() {
         </div>
 
         <div className="cp-right">
-          <div className="cp-preview-header">
-            <div className="cp-preview-dropdown-wrap">
-              <select
-                className="cp-preview-dropdown"
-                value={previewPage}
-                onChange={(e) => setPreviewPage(e.target.value)}
-                aria-label="Select preview page type"
-              >
-                {PREVIEW_PAGES.map((p) => (
-                  <option key={p.id} value={p.id}>{p.icon} {p.label}</option>
-                ))}
-              </select>
+          <div className="cp-right-tabs cp-tabs">
+            <button
+              className={`cp-tab ${rightTab === 'preview' ? 'cp-tab--active' : ''}`}
+              onClick={() => setRightTab('preview')}
+              type="button"
+            >
+              Preview
+            </button>
+            <button
+              className={`cp-tab ${rightTab === 'inspirations' ? 'cp-tab--active' : ''}`}
+              onClick={() => setRightTab('inspirations')}
+              type="button"
+            >
+              Inspirations
+            </button>
+          </div>
+
+          {rightTab === 'preview' ? (
+            <>
+              <div className="cp-preview-header">
+                <div className="cp-preview-dropdown-wrap">
+                  <select
+                    className="cp-preview-dropdown"
+                    value={previewPage}
+                    onChange={(e) => setPreviewPage(e.target.value)}
+                    aria-label="Select preview page type"
+                  >
+                    {PREVIEW_PAGES.map((p) => (
+                      <option key={p.id} value={p.id}>{p.icon} {p.label}</option>
+                    ))}
+                  </select>
+                </div>
+                {!hasRequiredColors && (
+                  <span className="cp-preview-hint">Set Primary, Background &amp; Text to see preview</span>
+                )}
+              </div>
+              <div className={`cp-preview-body${previewPage === 'components' || previewPage === 'saas' ? ' cp-preview-body--padded' : ''}`}>
+                {!hasRequiredColors ? (
+                  <div className="cp-preview-empty">
+                    <div className="cp-preview-empty-icon">🎨</div>
+                    <p>Set your Primary, Background, and Text colors to see a live preview of your kit.</p>
+                  </div>
+                ) : previewPage === 'components' ? (
+                  <LivePreviewComponents kit={kit} />
+                ) : previewPage === 'saas' ? (
+                  <LivePreviewApp kit={kit} />
+                ) : previewPage === 'portfolio' ? (
+                  <PreviewPortfolio
+                    kit={kit}
+                    sectionConfig={pageSections.portfolio || {}}
+                    onSectionChange={(key, val) => handleSectionChange('portfolio', key, val)}
+                  />
+                ) : (() => {
+                  const page = PREVIEW_PAGES.find((p) => p.id === previewPage)
+                  const PageComponent = page?.component
+                  return PageComponent ? (
+                    <PageComponent
+                      kit={kit}
+                      sectionConfig={pageSections[previewPage] || {}}
+                      onSectionChange={(key, val) => handleSectionChange(previewPage, key, val)}
+                    />
+                  ) : null
+                })()}
+              </div>
+            </>
+          ) : (
+            <div className="cp-inspirations-tab">
+              {!hasRequiredColors ? (
+                <div className="cp-preview-empty">
+                  <div className="cp-preview-empty-icon">✨</div>
+                  <p>Set your Primary, Background, and Text colors to discover real websites that match your palette.</p>
+                </div>
+              ) : (
+                <>
+                  <SimilarWebsitesPanel
+                    kit={kit}
+                    category={referenceCategory}
+                    title="Inspirations"
+                    description="Real websites ranked by your palette, contrast mood, and the selected preview type."
+                    limit={8}
+                    variant="preview"
+                    onUseReference={handleApplyInspiration}
+                  />
+                  {appliedInspiration && (
+                    <div className="cp-inspiration-applied">
+                      <strong>Inspired by {appliedInspiration.sourceName}</strong>
+                      <span>{appliedInspiration.note}</span>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
-            {!hasRequiredColors && (
-              <span className="cp-preview-hint">Set Primary, Background &amp; Text to see preview</span>
-            )}
-          </div>
-          <div className={`cp-preview-body${previewPage === 'components' || previewPage === 'saas' ? ' cp-preview-body--padded' : ''}`}>
-            {!hasRequiredColors ? (
-              <div className="cp-preview-empty">
-                <div className="cp-preview-empty-icon">🎨</div>
-                <p>Set your Primary, Background, and Text colors to see a live preview of your kit.</p>
-              </div>
-            ) : previewPage === 'components' ? (
-              <LivePreviewComponents kit={kit} />
-            ) : previewPage === 'saas' ? (
-              <LivePreviewApp kit={kit} />
-            ) : previewPage === 'portfolio' ? (
-              <PreviewPortfolio
-                kit={kit}
-                sectionConfig={pageSections.portfolio || {}}
-                onSectionChange={(key, val) => handleSectionChange('portfolio', key, val)}
-              />
-            ) : (() => {
-              const page = PREVIEW_PAGES.find((p) => p.id === previewPage)
-              const PageComponent = page?.component
-              return PageComponent ? (
-                <PageComponent
-                  kit={kit}
-                  sectionConfig={pageSections[previewPage] || {}}
-                  onSectionChange={(key, val) => handleSectionChange(previewPage, key, val)}
-                />
-              ) : null
-            })()}
-            {hasRequiredColors && (
-              <SimilarWebsitesPanel
-                kit={kit}
-                category={referenceCategory}
-                title="Similar Websites"
-                description="Ranked by your palette, contrast mood, and the selected preview type."
-                limit={4}
-                variant="preview"
-                onUseReference={handleApplyInspiration}
-              />
-            )}
-            {appliedInspiration && hasRequiredColors && (
-              <div className="cp-inspiration-applied">
-                <strong>Inspired by {appliedInspiration.sourceName}</strong>
-                <span>{appliedInspiration.note}</span>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
