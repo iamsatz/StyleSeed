@@ -1836,7 +1836,7 @@ export default function CreatePage() {
                     category={referenceCategory}
                     title="Inspirations"
                     description="Real websites ranked by your palette, contrast mood, and the selected preview type."
-                    limit={8}
+                    limit={24}
                     variant="preview"
                     onUseReference={handleApplyInspiration}
                   />
