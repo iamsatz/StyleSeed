@@ -534,6 +534,27 @@ const TYPE_ROLES = [
   { key: 'monoFont', label: 'Code' },
 ]
 
+function SuggestionList({ suggestions, onSelect }) {
+  if (!suggestions.length) return null
+  return (
+    <div className="cp-type-suggestions">
+      {suggestions.map((font) => (
+        <button
+          key={font.family}
+          type="button"
+          className="cp-type-suggestion"
+          onClick={() => onSelect(font)}
+        >
+          <span className="cp-type-suggestion-name" style={{ fontFamily: `'${font.family}', sans-serif` }}>
+            {font.family}
+          </span>
+          <span className="cp-type-suggestion-badge">{PROVIDER_LABELS[font.provider] || font.provider}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function TypographyTab({ typography, onTypographyChange }) {
   const normalized = normalizeTypography(typography)
   const [query, setQuery] = useState('')
@@ -616,27 +637,6 @@ function TypographyTab({ typography, onTypographyChange }) {
     setAddingTo(null); setQuery(''); setSuggestions([])
   }
 
-  function SuggestionList({ onSelect }) {
-    if (!suggestions.length) return null
-    return (
-      <div className="cp-type-suggestions">
-        {suggestions.map((font) => (
-          <button
-            key={font.family}
-            type="button"
-            className="cp-type-suggestion"
-            onClick={() => onSelect(font)}
-          >
-            <span className="cp-type-suggestion-name" style={{ fontFamily: `'${font.family}', sans-serif` }}>
-              {font.family}
-            </span>
-            <span className="cp-type-suggestion-badge">{PROVIDER_LABELS[font.provider] || font.provider}</span>
-          </button>
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div className="cp-typography-studio">
       <div className="cp-type-cards">
@@ -701,7 +701,7 @@ function TypographyTab({ typography, onTypographyChange }) {
                     />
                     <button type="button" className="cp-type-search-cancel" onClick={closeSearch}>Cancel</button>
                   </div>
-                  <SuggestionList onSelect={(font) => changeFontFamily(card.family, font)} />
+                  <SuggestionList suggestions={suggestions} onSelect={(font) => changeFontFamily(card.family, font)} />
                 </div>
               )}
             </div>
@@ -722,7 +722,7 @@ function TypographyTab({ typography, onTypographyChange }) {
             />
             <button type="button" className="cp-type-search-cancel" onClick={closeSearch}>Cancel</button>
           </div>
-          <SuggestionList onSelect={addNewTypeface} />
+          <SuggestionList suggestions={suggestions} onSelect={addNewTypeface} />
         </div>
       ) : (
         allCards.length < 5 && (
