@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { LayoutGrid, Moon, Sun } from 'lucide-react'
+import { LayoutGrid, Moon, Sun, Code2 } from 'lucide-react'
 import { useTheme } from '../../lib/useTheme'
 import './TopNav.css'
 
@@ -24,6 +24,13 @@ export default function TopNav() {
             className={({ isActive }) => 'top-nav-link top-nav-link--cta' + (isActive ? ' active' : '')}
           >
             Create Kit
+          </NavLink>
+          <NavLink
+            to="/preview"
+            className={({ isActive }) => 'top-nav-link' + (isActive ? ' active' : '')}
+          >
+            <Code2 size={15} style={{ marginRight: 5, verticalAlign: -2 }} />
+            Preview
           </NavLink>
           <NavLink
             to="/canvas"

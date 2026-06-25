@@ -4,6 +4,7 @@
  */
 import { getDefaultColorUsageForIndustry } from './colorUsagePresets.js'
 import { normalizeTypography } from './typographyRoles.js'
+import { getKitTypography } from './kitThemeTokens.js'
 import { getFontRecordByFamily } from './freeFontCatalog.js'
 
 function toCssVarName(key) {
@@ -164,7 +165,8 @@ ${typographyMarkdown(kit)}
 export function generateV0Config(kit) {
   const light = kit.palette?.light || {}
   const dark = kit.palette?.dark || {}
-  const typography = typographyForKit(kit)
+  const typography = getKitTypography(kit)
+  const radius = kit.borderRadius || {}
 
   const colorEntries = (palette, prefix) =>
     Object.entries(palette)
@@ -193,12 +195,12 @@ ${colorEntries(dark, '')}
         mono: ['${typography.monoFont}', 'ui-monospace', 'monospace'],
       },
       borderRadius: {
-        sm: '4px',
-        DEFAULT: '8px',
-        md: '8px',
-        lg: '12px',
+        sm: '${radius.sm || '4px'}',
+        DEFAULT: '${radius.md || '8px'}',
+        md: '${radius.md || '8px'}',
+        lg: '${radius.lg || '12px'}',
         xl: '16px',
-        full: '9999px',
+        full: '${radius.full || '9999px'}',
       },
     },
   },

@@ -5,6 +5,7 @@ import BrowsePage from './pages/BrowsePage'
 import KitDetailPage from './pages/KitDetailPage'
 import CreatePage from './pages/CreatePage'
 import CanvasPage from './pages/CanvasPage'
+import CodePreviewPage from './pages/CodePreviewPage'
 import { CustomKitProvider } from './context/CustomKitContext'
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/create" element={<CreatePage />} />
           <Route path="/canvas" element={<CanvasPage />} />
+          <Route path="/preview" element={<CodePreviewPage />} />
           <Route path="/kit/:id" element={<KitDetailPage />} />
         </Routes>
       </BrowserRouter>

@@ -25,6 +25,25 @@
   margin-bottom: 0;
 }
 
+.export-preview-handoff {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 14px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: #111827;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.export-preview-handoff:hover {
+  opacity: 0.88;
+  color: #fff;
+}
+
 /* ─── AI Target card selector ────────────────────────── */
 .export-target-grid {
   display: grid;

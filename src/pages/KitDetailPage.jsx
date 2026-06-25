@@ -344,6 +344,12 @@ export default function KitDetailPage() {
             >
               Export for AI →
             </a>
+            <Link
+              className="kd-export-shortcut"
+              to={`/preview?kit=${encodeURIComponent(id)}&mode=${mode}`}
+            >
+              Code preview →
+            </Link>
           </div>
         </div>
 

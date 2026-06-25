@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import {
   generateClaudePrompt,
   generateV0Config,
@@ -126,6 +127,12 @@ export default function ExportPanel({ kit }) {
         <p className="export-panel-subtitle">
           Generate tool-specific output from your design tokens — ready to paste into Claude, v0, Cursor, or Replit.
         </p>
+        <Link
+          to={`/preview?kit=${encodeURIComponent(kit.id || 'saas-clarity')}&mode=light`}
+          className="export-preview-handoff"
+        >
+          Preview pasted code with this kit →
+        </Link>
       </div>
 
       <div className="export-target-grid" role="tablist" aria-label="AI tool selector">
