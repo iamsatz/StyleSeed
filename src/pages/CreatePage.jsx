@@ -20,6 +20,7 @@ import {
   getDefaultTypography,
   normalizeTypography,
 } from '../lib/typographyRoles'
+import PreviewComponents from '../components/create/previews/PreviewComponents'
 import PreviewDashboard from '../components/create/previews/PreviewDashboard'
 import PreviewPortfolio from '../components/create/previews/PreviewPortfolio'
 import PreviewBlog from '../components/create/previews/PreviewBlog'
@@ -234,94 +235,6 @@ function applyKitPreviewVars(el, kit) {
     el.style.setProperty('--hp-ui-font', `'${typography.uiFont || typography.bodyFont}', sans-serif`)
     el.style.setProperty('--hp-mono-font', `'${typography.monoFont}', monospace`)
   }
-}
-
-function LivePreviewComponents({ kit }) {
-  const ref = useRef(null)
-
-  useEffect(() => {
-    if (!ref.current || !kit) return
-    applyKitPreviewVars(ref.current, kit)
-  }, [kit])
-
-  if (!kit) return null
-
-  return (
-    <div className="lp-components" ref={ref}>
-      <div className="lp-comp-section">
-        <div className="lp-comp-label">Auth Form</div>
-        <div className="lp-auth-card">
-          <div className="lp-auth-logo">◈ Acme</div>
-          <div className="lp-auth-title">Create an account</div>
-          <div className="lp-auth-sub">Sign up to get started today</div>
-          <div className="lp-field">
-            <label className="lp-label">Email</label>
-            <input className="lp-input" type="email" placeholder="you@example.com" readOnly />
-          </div>
-          <div className="lp-field">
-            <label className="lp-label">Password</label>
-            <input className="lp-input" type="password" placeholder="••••••••" readOnly />
-          </div>
-          <button className="lp-btn lp-btn--primary lp-btn--full">Create account</button>
-          <button className="lp-btn lp-btn--ghost lp-btn--full">Continue with GitHub</button>
-        </div>
-      </div>
-
-      <div className="lp-comp-section">
-        <div className="lp-comp-label">Buttons</div>
-        <div className="lp-btn-row">
-          <button className="lp-btn lp-btn--primary">Primary</button>
-          <button className="lp-btn lp-btn--secondary">Secondary</button>
-          <button className="lp-btn lp-btn--ghost">Ghost</button>
-        </div>
-        <div className="lp-comp-label" style={{ marginTop: 16 }}>Badges</div>
-        <div className="lp-badge-row">
-          <span className="lp-badge lp-badge--primary">Primary</span>
-          <span className="lp-badge lp-badge--secondary">Secondary</span>
-          <span className="lp-badge lp-badge--success">Success</span>
-          <span className="lp-badge lp-badge--warning">Warning</span>
-        </div>
-      </div>
-
-      <div className="lp-comp-section">
-        <div className="lp-comp-label">Stat Cards</div>
-        <div className="lp-stats">
-          <div className="lp-stat lp-stat--primary">
-            <div className="lp-stat-label">Revenue</div>
-            <div className="lp-stat-value">$48,295</div>
-            <div className="lp-stat-trend">↑ +12.4%</div>
-          </div>
-          <div className="lp-stat">
-            <div className="lp-stat-label">Users</div>
-            <div className="lp-stat-value">8,431</div>
-            <div className="lp-stat-trend">↑ +5.2%</div>
-          </div>
-          <div className="lp-stat">
-            <div className="lp-stat-label">Conversion</div>
-            <div className="lp-stat-value">3.68%</div>
-            <div className="lp-stat-trend lp-stat-trend--down">↓ −0.8%</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="lp-comp-section">
-        <div className="lp-comp-label">Card</div>
-        <div className="lp-card">
-          <div className="lp-card-header">
-            <span className="lp-card-title">Card Title</span>
-            <span className="lp-badge lp-badge--primary">New</span>
-          </div>
-          <div className="lp-card-body">
-            Cards use surface color and border tokens from the kit for consistent theming.
-          </div>
-          <div className="lp-card-footer">
-            <button className="lp-btn lp-btn--ghost lp-btn--sm">Cancel</button>
-            <button className="lp-btn lp-btn--primary lp-btn--sm">Confirm</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
 }
 
 function LivePreviewApp({ kit }) {
@@ -1855,7 +1768,7 @@ export default function CreatePage() {
                     <p>Set your Primary, Background, and Text colors to see a live preview of your kit.</p>
                   </div>
                 ) : previewPage === 'components' ? (
-                  <LivePreviewComponents kit={kit} />
+                  <PreviewComponents kit={kit} />
                 ) : previewPage === 'saas' ? (
                   <LivePreviewApp kit={kit} />
                 ) : previewPage === 'portfolio' ? (
