@@ -1,6 +1,8 @@
-# HuePrint
+# StyleSeed
 
-HuePrint is a design-token and typography studio for AI-builders. It helps users browse curated kits, build custom kits, extract colors from websites, preview real UI screens, and export AI-ready design context for Claude, v0, Cursor, and Replit.
+> Formerly **HuePrint** — renamed to StyleSeed.
+
+StyleSeed is a design-token and typography studio for AI-builders. It helps users browse curated kits, build custom kits, extract colors from websites, preview real UI screens, and export AI-ready design context for Claude, v0, Cursor, and Replit.
 
 ## What It Does
 
@@ -91,9 +93,9 @@ Returns:
 }
 ```
 
-When HuePrint runs through the local Express dev server, URL extraction enables local developer mode and can inspect `localhost`, `127.0.0.1`, and private LAN URLs. Hosted/Vercel extraction stays public-only and blocks private network targets.
+When StyleSeed runs through the local Express dev server, URL extraction enables local developer mode and can inspect `localhost`, `127.0.0.1`, and private LAN URLs. Hosted/Vercel extraction stays public-only and blocks private network targets.
 
-If hosted HuePrint blocks a local/private URL, use a deployed URL, an HTTPS tunnel URL, or the future HTML/CSS upload flow for offline local files.
+If hosted StyleSeed blocks a local/private URL, use a deployed URL, an HTTPS tunnel URL, or the future HTML/CSS upload flow for offline local files.
 
 Future versions will extend this response with optional typography, radii, shadows, spacing, components, and sections while keeping the existing fields compatible.
 
@@ -167,8 +169,8 @@ Every feature should ship as a small visible version:
 
 ### V3 - Localhost Testing
 
-- Support localhost extraction only when HuePrint runs locally.
-- Keep hosted HuePrint safe by blocking private network targets.
+- Support localhost extraction only when StyleSeed runs locally.
+- Keep hosted StyleSeed safe by blocking private network targets.
 - Explain hosted alternatives such as deployed URLs and tunnel URLs.
 
 ### V4 - Website Token And Component Extraction

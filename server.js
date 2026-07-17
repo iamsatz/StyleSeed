@@ -6,7 +6,7 @@ import { extractUrlColors } from './lib/extractUrl.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isDev = process.env.NODE_ENV !== 'production'
-const allowPrivateNetworkExtraction = isDev || process.env.HUEPRINT_LOCAL_DEV_MODE === 'true'
+const allowPrivateNetworkExtraction = isDev || process.env.STYLESEED_LOCAL_DEV_MODE === 'true' || process.env.HUEPRINT_LOCAL_DEV_MODE === 'true'
 const PORT = Number(process.env.PORT) || 5173
 
 const app = express()
@@ -28,9 +28,9 @@ if (isDev) {
 
   app.use(vite.middlewares)
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[HuePrint] Dev server running at http://0.0.0.0:${PORT}`)
-    console.log(`[HuePrint] API available at /api/extract-url`)
-    console.log(`[HuePrint] Localhost extraction ${allowPrivateNetworkExtraction ? 'enabled' : 'disabled'}`)
+    console.log(`[StyleSeed] Dev server running at http://0.0.0.0:${PORT}`)
+    console.log(`[StyleSeed] API available at /api/extract-url`)
+    console.log(`[StyleSeed] Localhost extraction ${allowPrivateNetworkExtraction ? 'enabled' : 'disabled'}`)
   })
 } else {
   const distPath = path.join(__dirname, 'dist')
@@ -39,6 +39,6 @@ if (isDev) {
     res.sendFile(path.join(distPath, 'index.html'))
   })
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[HuePrint] Production server running at http://0.0.0.0:${PORT}`)
+    console.log(`[StyleSeed] Production server running at http://0.0.0.0:${PORT}`)
   })
 }

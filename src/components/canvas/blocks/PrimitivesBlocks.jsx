@@ -129,7 +129,7 @@ export function PrimitiveAccordionBlock({ variant = 'default', config }) {
           </div>
           {item.open && (
             <div style={{ padding: '0 16px 14px', fontSize: '0.8125rem', color: 'var(--hp-textMuted)', lineHeight: 1.55, background: 'var(--hp-surface)' }}>
-              HuePrint lets you browse curated kits, customize colors and typography, preview on real UI components, and export AI-ready design context.
+              StyleSeed lets you browse curated kits, customize colors and typography, preview on real UI components, and export AI-ready design context.
             </div>
           )}
         </div>

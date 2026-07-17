@@ -14,7 +14,7 @@ import {
 } from '../lib/previewSandbox'
 import './CodePreviewPage.css'
 
-const STORAGE_KEY = 'hueprint_code_preview'
+const STORAGE_KEY = 'styleseed_code_preview'
 const VIEWPORT_ICONS = { monitor: Monitor, tablet: Tablet, smartphone: Smartphone }
 
 function loadStoredState() {

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* =====================================================
-   HuePrint — Global Theme  (apply .dark on <html>)
+   StyleSeed — Global Theme  (apply .dark on <html>)
    ===================================================== */
 :root {
   --bg:            #ffffff;

@@ -237,7 +237,7 @@ export default function PreviewOnboarding({ kit, sectionConfig = {}, onSectionCh
   return (
     <div ref={ref} style={{ fontFamily: 'var(--hp-body-font)', background: 'var(--hp-background)', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
       <nav style={{ background: 'var(--hp-surface)', borderBottom: '1px solid var(--hp-border)', padding: '10px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-        <div style={{ fontFamily: 'var(--hp-heading-font)', fontWeight: 800, fontSize: 15, color: 'var(--hp-text)' }}>HuePrint</div>
+        <div style={{ fontFamily: 'var(--hp-heading-font)', fontWeight: 800, fontSize: 15, color: 'var(--hp-text)' }}>StyleSeed</div>
         <span style={{ fontFamily: 'var(--hp-body-font)', fontSize: 12, color: 'var(--hp-textMuted)' }}>Step 3 of 5</span>
         <a style={{ fontFamily: 'var(--hp-body-font)', fontSize: 12, color: 'var(--hp-textMuted)', cursor: 'pointer', textDecoration: 'none' }}>Save and exit</a>
       </nav>

@@ -57,12 +57,12 @@ export default function HowItWorks() {
       <div className="hp-problem-bar">
         <div className="hp-inner hp-problem-bar-inner">
           <div className="hp-problem-col hp-problem-col--bad">
-            <span className="hp-problem-tag hp-problem-tag--bad">Without HuePrint</span>
+            <span className="hp-problem-tag hp-problem-tag--bad">Without StyleSeed</span>
             <p className="hp-problem-text">AI picks whatever blue looks decent. Your prompt says "modern dashboard" — you get the same slate-600 every other app uses.</p>
           </div>
           <div className="hp-problem-divider" />
           <div className="hp-problem-col hp-problem-col--good">
-            <span className="hp-problem-tag hp-problem-tag--good">With HuePrint</span>
+            <span className="hp-problem-tag hp-problem-tag--good">With StyleSeed</span>
             <p className="hp-problem-text">AI knows your primary is #2563EB for CTAs, your surface is #F8FAFC for cards, and your border is #E2E8F0 for separators. It uses them correctly.</p>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function HowItWorks() {
         <div className="hp-inner">
           <div className="hp-section-eyebrow hp-section-eyebrow--light">What you get</div>
           <h2 className="hp-section-h2 hp-section-h2--light">One kit. Four AI-ready formats.</h2>
-          <p className="hp-section-sub hp-section-sub--light">Every tool speaks a different language. HuePrint generates the right one.</p>
+          <p className="hp-section-sub hp-section-sub--light">Every tool speaks a different language. StyleSeed generates the right one.</p>
 
           <div className="hp-exports-grid">
             {EXPORTS.map(({ file, label, desc, color }) => (

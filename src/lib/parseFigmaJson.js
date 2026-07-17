@@ -1,8 +1,8 @@
 /**
- * Maps a Figma variable name to a HuePrint palette role.
+ * Maps a Figma variable name to a StyleSeed palette role.
  * Returns null if no mapping is found.
  * @param {string} name - Raw variable name from Figma export
- * @returns {string|null} - HuePrint role key or null
+ * @returns {string|null} - StyleSeed role key or null
  */
 function mapVariableToRole(name) {
   const normalized = name.toLowerCase().replace(/[\s_/\\-]+/g, '-')
@@ -57,7 +57,7 @@ function extractHex(value) {
 }
 
 /**
- * Parses a Figma variables export JSON and maps variable names to HuePrint token roles.
+ * Parses a Figma variables export JSON and maps variable names to StyleSeed token roles.
  *
  * Supports two common Figma export shapes:
  *   1. { variables: [ { name, value, ... }, ... ] }

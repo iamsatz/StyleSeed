@@ -675,7 +675,7 @@ function PortfolioSectionControls({ value, onChange }) {
           <span className="cp-portfolio-controls-kicker">Portfolio structure</span>
           <strong>Section components</strong>
         </div>
-        <span>Structure inspired by common designer portfolios, using HuePrint placeholder content.</span>
+        <span>Structure inspired by common designer portfolios, using StyleSeed placeholder content.</span>
       </div>
       <div className="cp-portfolio-control-grid">
         {PORTFOLIO_SECTION_OPTIONS.map((section) => (
@@ -707,7 +707,7 @@ function ColorUsageSection({ presetId, customRatios, onPresetChange, onCustomRat
         <span className="cp-section-label">Color Usage</span>
       </div>
       <div className="cp-color-usage-note">
-        HuePrint presets guide composition for AI-generated UI. They are practical usage guidance, not official fixed ratios from Material, Carbon, or Atlassian.
+        StyleSeed presets guide composition for AI-generated UI. They are practical usage guidance, not official fixed ratios from Material, Carbon, or Atlassian.
       </div>
       <div className="cp-usage-preset-grid">
         {COLOR_USAGE_PRESETS.map((preset) => (
@@ -1162,7 +1162,7 @@ function UrlExtractTab({ onUseColors, onApplyColorsOnly, onUseTypography, onSugg
   const brandSuggestion = urlInput.trim().toLowerCase().replace(/\s+/g, '')
   const matchedBrand = Object.keys(BRAND_GUIDELINES).find((b) => b === brandSuggestion)
   const currentHost = typeof window !== 'undefined' ? window.location.hostname : ''
-  const isLocalHuePrint = currentHost === 'localhost' || currentHost === '127.0.0.1' || currentHost === '0.0.0.0'
+  const isLocalStyleSeed = currentHost === 'localhost' || currentHost === '127.0.0.1' || currentHost === '0.0.0.0'
 
   async function handleExtractWithUrl(targetUrl) {
     const url = (targetUrl || urlInput).trim()
@@ -1315,15 +1315,15 @@ function UrlExtractTab({ onUseColors, onApplyColorsOnly, onUseTypography, onSugg
           >
             Extract Colors & Tokens →
           </button>
-          <div className={`cp-url-devmode ${isLocalHuePrint ? 'cp-url-devmode--local' : ''}`}>
-            <strong>{isLocalHuePrint ? 'Local developer mode' : 'Hosted/public mode'}</strong>
+          <div className={`cp-url-devmode ${isLocalStyleSeed ? 'cp-url-devmode--local' : ''}`}>
+            <strong>{isLocalStyleSeed ? 'Local developer mode' : 'Hosted/public mode'}</strong>
             <span>
-              {isLocalHuePrint
-                ? 'Localhost, 127.0.0.1, and private LAN URLs are allowed while HuePrint runs locally.'
-                : 'Hosted HuePrint can only extract public websites. Localhost and private LAN URLs stay blocked.'}
+              {isLocalStyleSeed
+                ? 'Localhost, 127.0.0.1, and private LAN URLs are allowed while StyleSeed runs locally.'
+                : 'Hosted StyleSeed can only extract public websites. Localhost and private LAN URLs stay blocked.'}
             </span>
           </div>
-          {!isLocalHuePrint && (
+          {!isLocalStyleSeed && (
             <div className="cp-url-alternatives">
               <span className="cp-url-alternatives-title">For local apps</span>
               <ul>
@@ -1366,13 +1366,13 @@ function UrlExtractTab({ onUseColors, onApplyColorsOnly, onUseTypography, onSugg
           <p className="cp-url-error-sub">{errorMsg}</p>
           {privateNetworkBlocked && (
             <div className="cp-url-blocked-help">
-              <strong>Hosted HuePrint cannot reach your machine-local app.</strong>
+              <strong>Hosted StyleSeed cannot reach your machine-local app.</strong>
               <span>Try one of these instead:</span>
               <ul>
                 {(errorAlternatives.length > 0 ? errorAlternatives : [
                   { id: 'deployed-url', label: 'Use a deployed URL', description: 'Deploy the app and paste its public URL.' },
                   { id: 'tunnel-url', label: 'Use a temporary tunnel', description: 'Expose your local app with an HTTPS tunnel URL.' },
-                  { id: 'html-css-upload', label: 'HTML/CSS upload', description: 'A future HuePrint flow will inspect uploaded local files.' },
+                  { id: 'html-css-upload', label: 'HTML/CSS upload', description: 'A future StyleSeed flow will inspect uploaded local files.' },
                 ]).map((item) => (
                   <li key={item.id}>
                     <b>{item.label}</b>

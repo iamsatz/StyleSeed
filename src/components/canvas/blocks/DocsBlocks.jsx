@@ -68,7 +68,7 @@ export function DocsSidebarBlock({ variant = 'full-tree' }) {
       </aside>
       <div style={{ flex: 1, padding: 24 }}>
         <h1 style={{ margin: '0 0 8px', fontSize: '1.25rem', fontWeight: 800, color: 'var(--hp-text)', fontFamily: 'var(--hp-heading-font)' }}>Introduction</h1>
-        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--hp-textMuted)', lineHeight: 1.6 }}>HuePrint helps you build, preview, and export design systems for AI coding tools.</p>
+        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--hp-textMuted)', lineHeight: 1.6 }}>StyleSeed helps you build, preview, and export design systems for AI coding tools.</p>
       </div>
     </div>
   )
@@ -82,8 +82,8 @@ export function DocsContentBlock({ variant = 'wide', config }) {
       <div className="cv-block" style={{ display: 'flex', gap: 'var(--cv-block-gap, 24px)', padding: pad, background: 'var(--hp-background)' }}>
         <div style={{ flex: 1 }}>
           <h2 style={{ margin: '0 0 12px', fontSize: 'calc(1.125rem * var(--cv-block-scale, 1))', fontWeight: 800, color: 'var(--hp-text)', fontFamily: 'var(--hp-heading-font)' }}>{title || 'Installation'}</h2>
-          <p style={{ margin: '0 0 16px', fontSize: '0.875rem', color: 'var(--hp-textMuted)', lineHeight: 1.65 }}>Install HuePrint tokens in your project and configure your design kit.</p>
-          <div style={{ padding: '12px 14px', background: 'var(--hp-text)', borderRadius: 8, fontFamily: 'var(--hp-mono-font)', fontSize: '0.75rem', color: '#e5e7eb' }}>npm install @hueprint/tokens</div>
+          <p style={{ margin: '0 0 16px', fontSize: '0.875rem', color: 'var(--hp-textMuted)', lineHeight: 1.65 }}>Install StyleSeed tokens in your project and configure your design kit.</p>
+          <div style={{ padding: '12px 14px', background: 'var(--hp-text)', borderRadius: 8, fontFamily: 'var(--hp-mono-font)', fontSize: '0.75rem', color: '#e5e7eb' }}>npm install @styleseed/tokens</div>
         </div>
         <aside style={{ width: 140, flexShrink: 0 }}>
           <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--hp-textMuted)', marginBottom: 10 }}>On this page</div>
@@ -97,7 +97,7 @@ export function DocsContentBlock({ variant = 'wide', config }) {
   return (
     <div className="cv-block" style={{ padding: `${pad} 32px`, background: 'var(--hp-background)', maxWidth: 720, margin: '0 auto' }}>
       <h2 style={{ margin: '0 0 12px', fontSize: 'calc(1.25rem * var(--cv-block-scale, 1))', fontWeight: 800, color: 'var(--hp-text)', fontFamily: 'var(--hp-heading-font)' }}>{title || 'Quick Start'}</h2>
-      <p style={{ margin: '0 0 16px', fontSize: '0.875rem', color: 'var(--hp-textMuted)', lineHeight: 1.65 }}>Get up and running with HuePrint in under five minutes. Browse a kit, customize colors, and export to your AI tool.</p>
+      <p style={{ margin: '0 0 16px', fontSize: '0.875rem', color: 'var(--hp-textMuted)', lineHeight: 1.65 }}>Get up and running with StyleSeed in under five minutes. Browse a kit, customize colors, and export to your AI tool.</p>
       <ol style={{ margin: 0, paddingLeft: 20, fontSize: '0.875rem', color: 'var(--hp-text)', lineHeight: 1.8 }}>
         <li>Browse curated kits by industry</li>
         <li>Customize palette and typography</li>
@@ -113,9 +113,9 @@ export function DocsCodeBlock({ variant = 'highlighted' }) {
       <div className="cv-block" style={{ padding: 16, background: 'var(--hp-background)' }}>
         <div style={{ background: '#0f172a', borderRadius: 10, padding: '14px 16px', fontFamily: 'var(--hp-mono-font)', fontSize: '0.8125rem' }}>
           {[
-            { type: 'cmd', text: '$ npm install @hueprint/tokens' },
+            { type: 'cmd', text: '$ npm install @styleseed/tokens' },
             { type: 'out', text: 'added 12 packages in 1.4s' },
-            { type: 'cmd', text: '$ npx hueprint init' },
+            { type: 'cmd', text: '$ npx styleseed init' },
             { type: 'success', text: 'Done. Config written.' },
           ].map((line, i) => (
             <div key={i} style={{ color: line.type === 'cmd' ? '#94a3b8' : line.type === 'success' ? 'var(--hp-success)' : '#64748b', marginBottom: 4 }}>{line.text}</div>

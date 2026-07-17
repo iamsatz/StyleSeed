@@ -31,14 +31,14 @@ export default function Footer() {
       <footer className="hp-footer">
         <div className="hp-inner hp-footer-inner">
           <div className="hp-footer-brand">
-            <span className="hp-footer-wordmark">HuePrint</span>
+            <span className="hp-footer-wordmark">StyleSeed</span>
             <span className="hp-footer-tagline">Design tokens for AI builders.</span>
           </div>
           <div className="hp-footer-links">
             <Link to="/browse" className="hp-footer-link">Browse Kits</Link>
             <Link to="/create" className="hp-footer-link">Create Kit</Link>
           </div>
-          <p className="hp-footer-copy">© {new Date().getFullYear()} HuePrint</p>
+          <p className="hp-footer-copy">© {new Date().getFullYear()} StyleSeed</p>
         </div>
       </footer>
     </>

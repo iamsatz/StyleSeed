@@ -10,7 +10,7 @@ export default function TopNav() {
   return (
     <header className="top-nav">
       <div className="top-nav-inner">
-        <Link to="/" className="top-nav-wordmark">HuePrint</Link>
+        <Link to="/" className="top-nav-wordmark">StyleSeed</Link>
 
         <nav className="top-nav-links">
           <NavLink

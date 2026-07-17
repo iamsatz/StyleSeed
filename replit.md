@@ -1,10 +1,10 @@
-# HuePrint Project Notes
+# StyleSeed Project Notes
 
 ## Overview
 
-HuePrint is a React + Vite web application for creating design token kits for AI-builders. Users can browse curated kits, create custom kits, import Figma JSON, extract colors from website URLs, preview UI screens, and export AI-ready design context.
+StyleSeed is a React + Vite web application for creating design token kits for AI-builders. Users can browse curated kits, create custom kits, import Figma JSON, extract colors from website URLs, preview UI screens, and export AI-ready design context.
 
-The product roadmap expands HuePrint into a design reference and typography studio with free font search, real website inspiration, localhost testing, and website component/section extraction.
+The product roadmap expands StyleSeed into a design reference and typography studio with free font search, real website inspiration, localhost testing, and website component/section extraction.
 
 ## Tech Stack
 
@@ -191,7 +191,7 @@ Every feature should ship in a small version with visible progress and acceptanc
 
 ### V3.1 - Hosted Alternatives
 
-- Explain why hosted HuePrint cannot access a user's local `localhost`.
+- Explain why hosted StyleSeed cannot access a user's local `localhost`.
 - Suggest deployed URLs, tunnel URLs, and future HTML/CSS upload.
 
 ### V4.0 - Website Token Extraction Beyond Colors

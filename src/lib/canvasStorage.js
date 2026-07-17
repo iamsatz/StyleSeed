@@ -1,8 +1,8 @@
 import { getDefaultVariant, isValidPreviewState, isValidVariant } from './canvasBlocks'
 import { getDefaultBlockProps, isValidViewport, normalizeBlockProps } from './canvasInspector'
 
-export const WORKSPACES_KEY = 'hueprint_canvas_workspaces'
-export const LEGACY_LAYOUT_KEY = 'hueprint_canvas_layout'
+export const WORKSPACES_KEY = 'styleseed_canvas_workspaces'
+export const LEGACY_LAYOUT_KEY = 'styleseed_canvas_layout'
 
 /** @typedef {Object} CanvasKitRef @property {'curated'|'custom'} source @property {string} id */
 

@@ -49,11 +49,11 @@ module.exports = {
 }`
 
 const TERMINAL_LINES = [
-  { type: 'cmd', text: '$ npm install @hueprint/tokens' },
+  { type: 'cmd', text: '$ npm install @styleseed/tokens' },
   { type: 'out', text: 'added 12 packages in 1.4s' },
-  { type: 'cmd', text: '$ npx hueprint init' },
-  { type: 'out', text: 'Initializing HuePrint config...' },
-  { type: 'success', text: 'Done. Config written to hueprint.config.js' },
+  { type: 'cmd', text: '$ npx styleseed init' },
+  { type: 'out', text: 'Initializing StyleSeed config...' },
+  { type: 'success', text: 'Done. Config written to styleseed.config.js' },
 ]
 
 function DocsSidebar({ variant }) {
@@ -236,10 +236,10 @@ function CodeBlock({ variant }) {
         </div>
         <pre style={{ margin: 0, padding: '14px 16px', background: 'var(--hp-background)', fontFamily: 'var(--hp-mono-font)', fontSize: 12, lineHeight: 1.7, color: 'var(--hp-text)' }}>
           <span style={{ color: 'var(--hp-textMuted)' }}>$ </span>
-          <span>npm install @hueprint/tokens</span>
+          <span>npm install @styleseed/tokens</span>
           {'\n'}
           <span style={{ color: 'var(--hp-textMuted)' }}>$ </span>
-          <span>npx hueprint init</span>
+          <span>npx styleseed init</span>
         </pre>
       </div>
     </div>

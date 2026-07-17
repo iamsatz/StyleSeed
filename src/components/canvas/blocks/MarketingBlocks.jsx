@@ -34,7 +34,7 @@ export function MarketingHeroBlock({ variant = 'bold', config }) {
         <div style={{ width: 200, flexShrink: 0, background: 'var(--hp-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ textAlign: 'center', color: '#fff' }}>
             <div style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--hp-display-font)' }}>12K+</div>
-            <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>Teams using HuePrint</div>
+            <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>Teams using StyleSeed</div>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
-const SESSION_KEY = 'hueprint_custom_kit'
+const SESSION_KEY = 'styleseed_custom_kit'
 
 const CustomKitContext = createContext(null)
 

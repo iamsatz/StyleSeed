@@ -1,24 +1,24 @@
-# HuePrint Product Requirements Document
+# StyleSeed Product Requirements Document
 
 **Version:** 2.0
 **Date:** June 2026
 **Status:** Active product roadmap
 **Platform:** Web app - React 18, Vite, Express/Vercel API
-**Repo:** `hueprint`
+**Repo:** `styleseed`
 
 ## Product Summary
 
-HuePrint helps AI-builders create, preview, and export design systems that can be used in Claude, v0, Cursor, Replit, and similar coding tools. The product started as curated design token kits and now includes a custom kit builder, URL-based color extraction, live UI previews, and AI-ready exports.
+StyleSeed helps AI-builders create, preview, and export design systems that can be used in Claude, v0, Cursor, Replit, and similar coding tools. The product started as curated design token kits and now includes a custom kit builder, URL-based color extraction, live UI previews, and AI-ready exports.
 
-The next product direction is to make HuePrint a design reference and typography studio:
+The next product direction is to make StyleSeed a design reference and typography studio:
 
 - suggest real websites with a similar color/style feel
-- let developers test local apps when HuePrint runs locally
+- let developers test local apps when StyleSeed runs locally
 - search and apply free fonts from Google Fonts, Fontshare-style catalogs, and curated free font sources
 - support 1-4 font roles per kit
 - extract richer design tokens, components, and preview sections from websites without cloning third-party content
 
-**Core principle:** HuePrint should create usable design context, not just color values. A kit should tell an AI tool how to apply colors, typography, spacing, components, and visual rules.
+**Core principle:** StyleSeed should create usable design context, not just color values. A kit should tell an AI tool how to apply colors, typography, spacing, components, and visual rules.
 
 ## Target Users
 
@@ -43,7 +43,7 @@ The next product direction is to make HuePrint a design reference and typography
 
 ### Current Kit Model
 
-A HuePrint kit currently includes:
+A StyleSeed kit currently includes:
 
 - identity: `id`, `name`, `industry`, `description`
 - palette: light and dark semantic colors
@@ -64,7 +64,7 @@ Every feature must ship in small, visible, testable chunks.
 
 ## Product Options Library
 
-This section captures the reusable product options HuePrint should expose over time. Each option needs a short explanation in the UI so users learn why they are choosing it.
+This section captures the reusable product options StyleSeed should expose over time. Each option needs a short explanation in the UI so users learn why they are choosing it.
 
 ### Color Usage Options
 
@@ -101,7 +101,7 @@ Font source options should be searchable in one Typography Studio UI.
 |---|---|---|
 | Google Fonts | Broad free font search | Has a large public catalog and metadata, making it the best first dynamic font source. |
 | Fontshare-Style Curated Fonts | Modern brand/UI fonts | Adds more contemporary free font choices, starting with a curated local index. |
-| Curated HuePrint Picks | Users who do not want to search | Gives high-quality defaults by industry and avoids choice overload. |
+| Curated StyleSeed Picks | Users who do not want to search | Gives high-quality defaults by industry and avoids choice overload. |
 | Manual Font Entry | Existing brand fonts | Lets users type a family name or CSS import when the font is not in the catalog. |
 
 ### Smart Font Suggestion Options
@@ -132,12 +132,12 @@ Website inspiration should help users learn from real products without copying t
 
 ### Localhost Testing Options
 
-Localhost testing must be explicit because hosted HuePrint cannot access a user's machine-local URLs.
+Localhost testing must be explicit because hosted StyleSeed cannot access a user's machine-local URLs.
 
 | Option | Best for | Why it matters |
 |---|---|---|
-| Public URL | Hosted and local HuePrint | Safest default for extracting colors from deployed websites. |
-| Localhost Dev Mode | Developers running HuePrint locally | Allows `localhost`, `127.0.0.1`, and private LAN targets only when the app is local/dev. |
+| Public URL | Hosted and local StyleSeed | Safest default for extracting colors from deployed websites. |
+| Localhost Dev Mode | Developers running StyleSeed locally | Allows `localhost`, `127.0.0.1`, and private LAN targets only when the app is local/dev. |
 | Tunnel URL Guidance | Hosted users with local apps | Explains that users can expose a local app through a temporary public tunnel. |
 | HTML/CSS Upload | Future offline/local extraction | Lets users inspect local projects without network access or crawling. |
 
@@ -219,9 +219,9 @@ Goal: help users understand how much visual space each color should occupy in a 
 
 Important positioning:
 
-- These are HuePrint usage presets, not official fixed ratios from Material, Carbon, or Atlassian.
+- These are StyleSeed usage presets, not official fixed ratios from Material, Carbon, or Atlassian.
 - Material Design, IBM Carbon, and Atlassian Design System use role-based color systems rather than fixed percentages.
-- HuePrint translates those role-based principles into practical ratio guidance for AI-generated UI.
+- StyleSeed translates those role-based principles into practical ratio guidance for AI-generated UI.
 - Ratios should guide composition and AI prompts, not hard-code exact pixel measurements.
 
 Requirements:
@@ -305,7 +305,7 @@ Requirements:
 - Expand the Portfolio preview into multiple portfolio sections.
 - Add section-level controls in Create Kit when Portfolio preview is selected.
 - Let users change the relevant component style for each section, such as hero layout, client strip style, case study card style, project grid style, exploration list style, contact CTA style, and footer style.
-- Keep section variants generic and kit-driven through HuePrint tokens.
+- Keep section variants generic and kit-driven through StyleSeed tokens.
 - Preserve existing preview behavior for non-portfolio previews.
 
 Acceptance:
@@ -317,7 +317,7 @@ Acceptance:
 
 ### V1.1 - Google Fonts Search
 
-Goal: let users search and apply free Google Fonts inside HuePrint.
+Goal: let users search and apply free Google Fonts inside StyleSeed.
 
 Requirements:
 
@@ -370,13 +370,13 @@ Requirements:
 
 Acceptance:
 
-- HuePrint can show real website references from static data.
+- StyleSeed can show real website references from static data.
 
 ### V2.1 - Palette Similarity Matching
 
 Goal: rank inspiration websites based on the user's selected colors.
 
-Status: Implemented. HuePrint now ranks curated website references by palette similarity, contrast mood, and optional category in Create Kit and Kit Detail.
+Status: Implemented. StyleSeed now ranks curated website references by palette similarity, contrast mood, and optional category in Create Kit and Kit Detail.
 
 Requirements:
 
@@ -406,19 +406,19 @@ Acceptance:
 
 ### V3.0 - Localhost Testing: Safe Developer Mode
 
-Goal: let developers test local websites when HuePrint runs locally.
+Goal: let developers test local websites when StyleSeed runs locally.
 
 Status: Implemented. Shared extraction logic now allows localhost and private LAN URLs only when the local Express dev server explicitly enables private-network extraction; the hosted API keeps those targets blocked.
 
 Requirements:
 
-- Document that hosted HuePrint cannot access a user's local `localhost`.
+- Document that hosted StyleSeed cannot access a user's local `localhost`.
 - Add explicit local/dev mode for localhost extraction.
 - Allow `localhost`, `127.0.0.1`, and private LAN addresses only in local/dev mode.
 
 Acceptance:
 
-- User running HuePrint locally can extract from `http://localhost:3000`.
+- User running StyleSeed locally can extract from `http://localhost:3000`.
 - Hosted/public mode keeps private network targets blocked.
 
 ### V3.1 - Hosted Alternatives For Local Apps
@@ -463,7 +463,7 @@ Requirements:
 
 Acceptance:
 
-- HuePrint lists detected component types and lets users choose preview additions.
+- StyleSeed lists detected component types and lets users choose preview additions.
 
 ### V4.2 - Section Preview Generator
 
